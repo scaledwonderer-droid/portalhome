@@ -226,10 +226,37 @@
     .debug-panel .row { margin-bottom: 10px; }
     .debug-panel label { display: block; margin-bottom: 4px; }
     .debug-panel select,
-    .debug-panel input[type="range"],
     .debug-panel textarea,
     .debug-panel button {
       width: 100%;
+    }
+
+    .adjust-control {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 92px;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .adjust-control input[type="range"] {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .adjust-control input[type="number"] {
+      width: 92px;
+      padding: 7px 8px;
+      border: 1px solid rgba(167, 221, 255, 0.32);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.32);
+      color: #f4fbff;
+      font: inherit;
+      text-align: right;
+    }
+
+    .adjust-control input[type="number"]:focus {
+      outline: 2px solid rgba(133, 209, 255, 0.58);
+      outline-offset: 1px;
     }
 
     .debug-panel textarea {
@@ -330,18 +357,27 @@
     </div>
 
     <div class="row">
-      <label for="offsetX">X移動 <span class="value" id="offsetXValue">0</span></label>
-      <input id="offsetX" type="range" min="-800" max="800" step="1" value="0">
+      <label for="offsetXNumber">X移動</label>
+      <div class="adjust-control">
+        <input id="offsetX" type="range" min="-800" max="800" step="1" value="0">
+        <input id="offsetXNumber" type="number" min="-800" max="800" step="1" value="0" inputmode="numeric" aria-label="X移動の数値">
+      </div>
     </div>
 
     <div class="row">
-      <label for="offsetY">Y移動 <span class="value" id="offsetYValue">0</span></label>
-      <input id="offsetY" type="range" min="-800" max="800" step="1" value="0">
+      <label for="offsetYNumber">Y移動</label>
+      <div class="adjust-control">
+        <input id="offsetY" type="range" min="-800" max="800" step="1" value="0">
+        <input id="offsetYNumber" type="number" min="-800" max="800" step="1" value="0" inputmode="numeric" aria-label="Y移動の数値">
+      </div>
     </div>
 
     <div class="row">
-      <label for="scale">拡大率 <span class="value" id="scaleValue">1.000</span></label>
-      <input id="scale" type="range" min="0.300" max="2.000" step="0.001" value="1.000">
+      <label for="scaleNumber">拡大率</label>
+      <div class="adjust-control">
+        <input id="scale" type="range" min="0.300" max="2.000" step="0.001" value="1.000">
+        <input id="scaleNumber" type="number" min="0.300" max="2.000" step="0.001" value="1.000" inputmode="decimal" aria-label="拡大率の数値">
+      </div>
     </div>
 
     <div class="buttons row">
@@ -355,8 +391,8 @@
     </div>
 
     <div class="hint">
-      まず人物を選び、スライダーで位置と大きさを合わせてください。<br>
-      その後「設定をコピー」を押し、出力された transform 値を本番用HTMLへ戻せます。
+      人物を選び、スライダーまたは右側の数値欄で位置と大きさを調整できます。<br>
+      数値欄は直接入力でき、X・Yは1px単位、拡大率は0.001単位で微調整できます。
     </div>
   </aside>
 
@@ -390,9 +426,9 @@
       const offsetXInput = document.getElementById("offsetX");
       const offsetYInput = document.getElementById("offsetY");
       const scaleInput = document.getElementById("scale");
-      const offsetXValue = document.getElementById("offsetXValue");
-      const offsetYValue = document.getElementById("offsetYValue");
-      const scaleValue = document.getElementById("scaleValue");
+      const offsetXNumber = document.getElementById("offsetXNumber");
+      const offsetYNumber = document.getElementById("offsetYNumber");
+      const scaleNumber = document.getElementById("scaleNumber");
       const configOutput = document.getElementById("configOutput");
       const resetCurrentButton = document.getElementById("resetCurrentButton");
       const copyButton = document.getElementById("copyButton");
@@ -557,10 +593,14 @@
         offsetXInput.value = String(transform.x);
         offsetYInput.value = String(transform.y);
         scaleInput.value = String(transform.scale.toFixed(3));
-        offsetXValue.textContent = String(transform.x);
-        offsetYValue.textContent = String(transform.y);
-        scaleValue.textContent = Number(transform.scale).toFixed(3);
+        offsetXNumber.value = String(transform.x);
+        offsetYNumber.value = String(transform.y);
+        scaleNumber.value = Number(transform.scale).toFixed(3);
         showCharacter(editingIndex, false);
+      }
+
+      function clamp(value, min, max) {
+        return Math.min(max, Math.max(min, value));
       }
 
       function applyControlsToCharacter() {
@@ -569,9 +609,9 @@
         transform.y = Number(offsetYInput.value);
         transform.scale = Number(scaleInput.value);
 
-        offsetXValue.textContent = String(transform.x);
-        offsetYValue.textContent = String(transform.y);
-        scaleValue.textContent = Number(transform.scale).toFixed(3);
+        offsetXNumber.value = String(transform.x);
+        offsetYNumber.value = String(transform.y);
+        scaleNumber.value = Number(transform.scale).toFixed(3);
 
         if (ready) {
           rebuildCharacter(editingIndex);
@@ -602,6 +642,30 @@
       offsetXInput.addEventListener("input", applyControlsToCharacter);
       offsetYInput.addEventListener("input", applyControlsToCharacter);
       scaleInput.addEventListener("input", applyControlsToCharacter);
+
+      function applyNumberInputs() {
+        const x = clamp(Number(offsetXNumber.value || 0), -800, 800);
+        const y = clamp(Number(offsetYNumber.value || 0), -800, 800);
+        const scale = clamp(Number(scaleNumber.value || 1), 0.300, 2.000);
+
+        offsetXInput.value = String(Math.round(x));
+        offsetYInput.value = String(Math.round(y));
+        scaleInput.value = scale.toFixed(3);
+
+        applyControlsToCharacter();
+      }
+
+      offsetXNumber.addEventListener("input", applyNumberInputs);
+      offsetYNumber.addEventListener("input", applyNumberInputs);
+      scaleNumber.addEventListener("input", applyNumberInputs);
+
+      [offsetXNumber, offsetYNumber, scaleNumber].forEach((input) => {
+        input.addEventListener("keydown", (event) => {
+          if (event.key === "Enter") {
+            input.blur();
+          }
+        });
+      });
 
       resetCurrentButton.addEventListener("click", () => {
         characters[editingIndex].transform = { x: 0, y: 0, scale: 1 };
