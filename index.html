@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <title>Cyber Train Links</title>
+
+  <style>
+    :root {
+      --glow: rgba(160, 220, 255, 0.95);
+      --glow-soft: rgba(103, 177, 255, 0.28);
+      --label-bg: rgba(5, 9, 19, 0.80);
+      --label-border: rgba(171, 222, 255, 0.45);
+      --transition: 180ms ease;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      background:
+        radial-gradient(circle at 50% 40%, #121729 0%, #070910 55%, #020307 100%);
+    }
+
+    body {
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      color: #f5f8ff;
+      font-family:
+        Inter,
+        "Noto Sans JP",
+        "Yu Gothic UI",
+        "Yu Gothic",
+        Meiryo,
+        sans-serif;
+    }
+
+    .page {
+      position: relative;
+      width: 100vw;
+      height: 100svh;
+      display: grid;
+      place-items: center;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right)
+        env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+
+    .scene {
+      position: relative;
+      width: min(100vw, calc(100svh * 1672 / 941));
+      aspect-ratio: 1672 / 941;
+      max-height: 100svh;
+      overflow: hidden;
+      background: #03050a;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+
+    .scene svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .character-link {
+      cursor: pointer;
+      outline: none;
+    }
+
+    .character-link .bright-layer {
+      opacity: 0;
+      filter:
+        brightness(1.30)
+        contrast(1.04)
+        saturate(1.08)
+        drop-shadow(0 0 8px rgba(155, 214, 255, 0.48));
+      transition: opacity var(--transition);
+      pointer-events: none;
+    }
+
+    .character-link .outline {
+      fill: transparent;
+      stroke: var(--glow);
+      stroke-width: 2.5;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+      vector-effect: non-scaling-stroke;
+      opacity: 0;
+      filter:
+        drop-shadow(0 0 4px rgba(170, 225, 255, 0.95))
+        drop-shadow(0 0 12px var(--glow-soft));
+      transition: opacity var(--transition);
+      pointer-events: none;
+    }
+
+    .character-link .hit-area {
+      fill: rgba(255, 255, 255, 0.001);
+      stroke: transparent;
+      pointer-events: all;
+    }
+
+    .character-link:hover .bright-layer,
+    .character-link:hover .outline,
+    .character-link:focus-visible .bright-layer,
+    .character-link:focus-visible .outline,
+    .character-link.is-selected .bright-layer,
+    .character-link.is-selected .outline {
+      opacity: 1;
+    }
+
+    .character-link:focus-visible .outline {
+      stroke-width: 3.5;
+    }
+
+    .destination-label {
+      position: absolute;
+      left: 50%;
+      bottom: clamp(14px, 3.2vw, 42px);
+      z-index: 10;
+      max-width: min(88%, 760px);
+      padding: 11px 18px 12px;
+      border: 1px solid var(--label-border);
+      border-radius: 999px;
+      background: var(--label-bg);
+      box-shadow:
+        0 0 24px rgba(83, 156, 255, 0.18),
+        inset 0 0 16px rgba(154, 216, 255, 0.04);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: #f6fbff;
+      font-size: clamp(13px, 1.25vw, 20px);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      line-height: 1.35;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      opacity: 0;
+      transform: translate(-50%, 10px);
+      transition:
+        opacity var(--transition),
+        transform var(--transition);
+      pointer-events: none;
+    }
+
+    .destination-label.is-visible {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    .tap-guide {
+      position: absolute;
+      left: 50%;
+      bottom: calc(clamp(14px, 3.2vw, 42px) + 51px);
+      z-index: 10;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(3, 7, 15, 0.72);
+      color: rgba(234, 246, 255, 0.82);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      opacity: 0;
+      transform: translate(-50%, 8px);
+      transition:
+        opacity var(--transition),
+        transform var(--transition);
+      pointer-events: none;
+    }
+
+    .tap-guide.is-visible {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    .loading-error {
+      position: absolute;
+      inset: 0;
+      display: none;
+      place-items: center;
+      padding: 24px;
+      background: #090b11;
+      color: #fff;
+      text-align: center;
+      line-height: 1.8;
+      z-index: 20;
+    }
+
+    @media (hover: none), (pointer: coarse) {
+      .destination-label {
+        bottom: max(18px, env(safe-area-inset-bottom));
+      }
+
+      .tap-guide {
+        bottom: calc(max(18px, env(safe-area-inset-bottom)) + 48px);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .character-link .bright-layer,
+      .character-link .outline,
+      .destination-label,
+      .tap-guide {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <div class="scene" id="scene">
+      <svg
+        viewBox="0 0 1672 941"
+        role="img"
+        aria-labelledby="sceneTitle sceneDescription"
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <title id="sceneTitle">サイバーパンク列車のリンク画面</title>
+        <desc id="sceneDescription">
+          5人の人物それぞれが異なるリンクになっています。
+        </desc>
+
+        <defs>
+          <!-- 画像ファイルは index.html と同じ場所へ置きます -->
+          <image
+            id="backgroundImage"
+            href="./cyber-train.png"
+            x="0"
+            y="0"
+            width="1672"
+            height="941"
+            preserveAspectRatio="none"
+          />
+
+          <!-- 左端：写真家 -->
+          <clipPath id="clip-photography" clipPathUnits="userSpaceOnUse">
+            <path d="M0 264 L36 233 L89 219 L151 213 L220 221 L276 249 L310 286 L337 352 L351 422 L367 478 L405 557 L445 676 L474 801 L486 941 L0 941 Z" />
+          </clipPath>
+
+          <!-- 左中央：小説家 -->
+          <clipPath id="clip-novels" clipPathUnits="userSpaceOnUse">
+            <path d="M397 336 L426 286 L467 261 L518 252 L570 267 L609 303 L626 351 L638 416 L680 456 L741 494 L792 575 L824 680 L854 793 L890 941 L479 941 L457 856 L448 738 L432 645 L411 572 L386 507 Z" />
+          </clipPath>
+
+          <!-- 中央：クリエイティブ -->
+          <clipPath id="clip-creative" clipPathUnits="userSpaceOnUse">
+            <path d="M701 88 L729 36 L775 9 L829 5 L876 28 L901 73 L899 126 L885 169 L920 194 L958 256 L970 345 L961 436 L947 522 L962 609 L987 720 L1009 839 L981 892 L930 906 L882 866 L856 754 L829 670 L804 592 L772 527 L734 452 L704 375 L681 293 L678 211 Z" />
+          </clipPath>
+
+          <!-- 右中央：音楽 -->
+          <clipPath id="clip-music" clipPathUnits="userSpaceOnUse">
+            <path d="M1007 122 L1029 70 L1074 35 L1128 27 L1172 44 L1206 83 L1214 135 L1203 181 L1238 204 L1268 261 L1280 338 L1282 433 L1274 535 L1298 640 L1324 752 L1335 856 L1305 918 L1248 941 L1168 941 L1129 884 L1127 801 L1106 713 L1086 620 L1064 527 L1044 432 L1027 341 L1002 260 Z" />
+          </clipPath>
+
+          <!-- 右端：SNS -->
+          <clipPath id="clip-social" clipPathUnits="userSpaceOnUse">
+            <path d="M1329 327 L1362 277 L1411 247 L1468 239 L1518 256 L1557 293 L1574 344 L1572 395 L1593 432 L1620 485 L1642 555 L1672 630 L1672 941 L1255 941 L1266 881 L1286 813 L1309 749 L1324 681 L1325 603 L1309 525 L1307 448 Z" />
+          </clipPath>
+        </defs>
+
+        <!-- 元画像 -->
+        <use href="#backgroundImage" />
+
+        <!--
+          href          : 実際のリンク先
+          data-label    : 画面に表示するリンク先名称
+          target="_blank" を付けると新しいタブで開きます
+        -->
+
+        <a
+          class="character-link"
+          href="https://example.com/photography"
+          data-label="Photography Gallery"
+          aria-label="Photography Galleryへ移動"
+        >
+          <use
+            class="bright-layer"
+            href="#backgroundImage"
+            clip-path="url(#clip-photography)"
+          />
+          <path
+            class="outline"
+            d="M0 264 L36 233 L89 219 L151 213 L220 221 L276 249 L310 286 L337 352 L351 422 L367 478 L405 557 L445 676 L474 801 L486 941 L0 941 Z"
+          />
+          <path
+            class="hit-area"
+            d="M0 264 L36 233 L89 219 L151 213 L220 221 L276 249 L310 286 L337 352 L351 422 L367 478 L405 557 L445 676 L474 801 L486 941 L0 941 Z"
+          />
+        </a>
+
+        <a
+          class="character-link"
+          href="https://example.com/novels"
+          data-label="Novel Archive"
+          aria-label="Novel Archiveへ移動"
+        >
+          <use
+            class="bright-layer"
+            href="#backgroundImage"
+            clip-path="url(#clip-novels)"
+          />
+          <path
+            class="outline"
+            d="M397 336 L426 286 L467 261 L518 252 L570 267 L609 303 L626 351 L638 416 L680 456 L741 494 L792 575 L824 680 L854 793 L890 941 L479 941 L457 856 L448 738 L432 645 L411 572 L386 507 Z"
+          />
+          <path
+            class="hit-area"
+            d="M397 336 L426 286 L467 261 L518 252 L570 267 L609 303 L626 351 L638 416 L680 456 L741 494 L792 575 L824 680 L854 793 L890 941 L479 941 L457 856 L448 738 L432 645 L411 572 L386 507 Z"
+          />
+        </a>
+
+        <a
+          class="character-link"
+          href="https://example.com/creative"
+          data-label="Creative Works"
+          aria-label="Creative Worksへ移動"
+        >
+          <use
+            class="bright-layer"
+            href="#backgroundImage"
+            clip-path="url(#clip-creative)"
+          />
+          <path
+            class="outline"
+            d="M701 88 L729 36 L775 9 L829 5 L876 28 L901 73 L899 126 L885 169 L920 194 L958 256 L970 345 L961 436 L947 522 L962 609 L987 720 L1009 839 L981 892 L930 906 L882 866 L856 754 L829 670 L804 592 L772 527 L734 452 L704 375 L681 293 L678 211 Z"
+          />
+          <path
+            class="hit-area"
+            d="M701 88 L729 36 L775 9 L829 5 L876 28 L901 73 L899 126 L885 169 L920 194 L958 256 L970 345 L961 436 L947 522 L962 609 L987 720 L1009 839 L981 892 L930 906 L882 866 L856 754 L829 670 L804 592 L772 527 L734 452 L704 375 L681 293 L678 211 Z"
+          />
+        </a>
+
+        <a
+          class="character-link"
+          href="https://example.com/music"
+          data-label="Music Channel"
+          aria-label="Music Channelへ移動"
+        >
+          <use
+            class="bright-layer"
+            href="#backgroundImage"
+            clip-path="url(#clip-music)"
+          />
+          <path
+            class="outline"
+            d="M1007 122 L1029 70 L1074 35 L1128 27 L1172 44 L1206 83 L1214 135 L1203 181 L1238 204 L1268 261 L1280 338 L1282 433 L1274 535 L1298 640 L1324 752 L1335 856 L1305 918 L1248 941 L1168 941 L1129 884 L1127 801 L1106 713 L1086 620 L1064 527 L1044 432 L1027 341 L1002 260 Z"
+          />
+          <path
+            class="hit-area"
+            d="M1007 122 L1029 70 L1074 35 L1128 27 L1172 44 L1206 83 L1214 135 L1203 181 L1238 204 L1268 261 L1280 338 L1282 433 L1274 535 L1298 640 L1324 752 L1335 856 L1305 918 L1248 941 L1168 941 L1129 884 L1127 801 L1106 713 L1086 620 L1064 527 L1044 432 L1027 341 L1002 260 Z"
+          />
+        </a>
+
+        <a
+          class="character-link"
+          href="https://example.com/social"
+          data-label="Social Media"
+          aria-label="Social Mediaへ移動"
+        >
+          <use
+            class="bright-layer"
+            href="#backgroundImage"
+            clip-path="url(#clip-social)"
+          />
+          <path
+            class="outline"
+            d="M1329 327 L1362 277 L1411 247 L1468 239 L1518 256 L1557 293 L1574 344 L1572 395 L1593 432 L1620 485 L1642 555 L1672 630 L1672 941 L1255 941 L1266 881 L1286 813 L1309 749 L1324 681 L1325 603 L1309 525 L1307 448 Z"
+          />
+          <path
+            class="hit-area"
+            d="M1329 327 L1362 277 L1411 247 L1468 239 L1518 256 L1557 293 L1574 344 L1572 395 L1593 432 L1620 485 L1642 555 L1672 630 L1672 941 L1255 941 L1266 881 L1286 813 L1309 749 L1324 681 L1325 603 L1309 525 L1307 448 Z"
+          />
+        </a>
+      </svg>
+
+      <div
+        class="destination-label"
+        id="destinationLabel"
+        role="status"
+        aria-live="polite"
+      ></div>
+
+      <div class="tap-guide" id="tapGuide" aria-hidden="true">
+        もう一度タップして移動
+      </div>
+
+      <div class="loading-error" id="loadingError">
+        画像を読み込めませんでした。<br>
+        「cyber-train.png」が index.html と同じ場所にあるか確認してください。
+      </div>
+    </div>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const links = [...document.querySelectorAll(".character-link")];
+      const label = document.getElementById("destinationLabel");
+      const tapGuide = document.getElementById("tapGuide");
+      const scene = document.getElementById("scene");
+      const loadingError = document.getElementById("loadingError");
+
+      const isTouchLike = window.matchMedia(
+        "(hover: none), (pointer: coarse)"
+      ).matches;
+
+      let selectedLink = null;
+
+      function showLabel(link, showGuide = false) {
+        const text = link?.dataset.label?.trim();
+        if (!text) return;
+
+        label.textContent = text;
+        label.classList.add("is-visible");
+        tapGuide.classList.toggle("is-visible", showGuide);
+      }
+
+      function hideLabel() {
+        label.classList.remove("is-visible");
+        tapGuide.classList.remove("is-visible");
+      }
+
+      function clearSelection() {
+        if (selectedLink) {
+          selectedLink.classList.remove("is-selected");
+        }
+        selectedLink = null;
+        hideLabel();
+      }
+
+      links.forEach((link) => {
+        link.addEventListener("mouseenter", () => {
+          if (!isTouchLike) showLabel(link, false);
+        });
+
+        link.addEventListener("mouseleave", () => {
+          if (!isTouchLike && document.activeElement !== link) {
+            hideLabel();
+          }
+        });
+
+        link.addEventListener("focus", () => {
+          showLabel(link, false);
+        });
+
+        link.addEventListener("blur", () => {
+          if (!isTouchLike) hideLabel();
+        });
+
+        link.addEventListener("click", (event) => {
+          if (!isTouchLike) return;
+
+          if (selectedLink !== link) {
+            event.preventDefault();
+            clearSelection();
+            selectedLink = link;
+            link.classList.add("is-selected");
+            showLabel(link, true);
+            return;
+          }
+
+          // 同じ人物を2回目にタップした場合は通常どおり移動します。
+        });
+      });
+
+      scene.addEventListener("pointerdown", (event) => {
+        if (!isTouchLike) return;
+        if (!event.target.closest(".character-link")) {
+          clearSelection();
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") clearSelection();
+      });
+
+      // SVG内の画像読み込み失敗を検知します。
+      const probe = new Image();
+      probe.src = "./cyber-train.png";
+      probe.addEventListener("error", () => {
+        loadingError.style.display = "grid";
+      });
+    })();
+  </script>
+</body>
+</html>
