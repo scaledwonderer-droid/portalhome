@@ -8,16 +8,13 @@
 
   <style>
     :root {
-      --glow: rgba(160, 220, 255, 0.95);
-      --glow-soft: rgba(103, 177, 255, 0.28);
-      --label-bg: rgba(5, 9, 19, 0.80);
-      --label-border: rgba(171, 222, 255, 0.45);
+      --label-bg: rgba(5, 9, 19, 0.84);
+      --label-border: rgba(174, 225, 255, 0.46);
+      --label-text: #f7fbff;
       --transition: 180ms ease;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     html,
     body {
@@ -25,7 +22,7 @@
       min-height: 100%;
       margin: 0;
       background:
-        radial-gradient(circle at 50% 40%, #121729 0%, #070910 55%, #020307 100%);
+        radial-gradient(circle at 50% 42%, #12182a 0%, #070910 58%, #020307 100%);
     }
 
     body {
@@ -33,24 +30,20 @@
       display: grid;
       place-items: center;
       overflow: hidden;
-      color: #f5f8ff;
-      font-family:
-        Inter,
-        "Noto Sans JP",
-        "Yu Gothic UI",
-        "Yu Gothic",
-        Meiryo,
-        sans-serif;
+      color: var(--label-text);
+      font-family: Inter, "Noto Sans JP", "Yu Gothic UI", "Yu Gothic", Meiryo, sans-serif;
     }
 
     .page {
-      position: relative;
       width: 100vw;
       height: 100svh;
       display: grid;
       place-items: center;
-      padding: env(safe-area-inset-top) env(safe-area-inset-right)
-        env(safe-area-inset-bottom) env(safe-area-inset-left);
+      padding:
+        env(safe-area-inset-top)
+        env(safe-area-inset-right)
+        env(safe-area-inset-bottom)
+        env(safe-area-inset-left);
     }
 
     .scene {
@@ -63,69 +56,45 @@
       user-select: none;
       -webkit-user-select: none;
       touch-action: manipulation;
+      cursor: default;
     }
 
-    .scene svg {
+    .background {
+      position: absolute;
+      inset: 0;
       display: block;
       width: 100%;
       height: 100%;
+      object-fit: fill;
+      pointer-events: none;
     }
 
-    .character-link {
-      cursor: pointer;
-      outline: none;
-    }
-
-    .character-link .bright-layer {
+    .highlight-layer {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
       opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition);
       filter:
-        brightness(1.30)
+        brightness(1.18)
         contrast(1.04)
         saturate(1.08)
-        drop-shadow(0 0 8px rgba(155, 214, 255, 0.48));
-      transition: opacity var(--transition);
-      pointer-events: none;
+        drop-shadow(0 0 3px rgba(185, 232, 255, 0.95))
+        drop-shadow(0 0 10px rgba(93, 177, 255, 0.58));
     }
 
-    .character-link .outline {
-      fill: transparent;
-      stroke: var(--glow);
-      stroke-width: 2.5;
-      stroke-linejoin: round;
-      stroke-linecap: round;
-      vector-effect: non-scaling-stroke;
-      opacity: 0;
-      filter:
-        drop-shadow(0 0 4px rgba(170, 225, 255, 0.95))
-        drop-shadow(0 0 12px var(--glow-soft));
-      transition: opacity var(--transition);
-      pointer-events: none;
-    }
-
-    .character-link .hit-area {
-      fill: rgba(255, 255, 255, 0.001);
-      stroke: transparent;
-      pointer-events: all;
-    }
-
-    .character-link:hover .bright-layer,
-    .character-link:hover .outline,
-    .character-link:focus-visible .bright-layer,
-    .character-link:focus-visible .outline,
-    .character-link.is-selected .bright-layer,
-    .character-link.is-selected .outline {
+    .highlight-layer.is-visible {
       opacity: 1;
-    }
-
-    .character-link:focus-visible .outline {
-      stroke-width: 3.5;
     }
 
     .destination-label {
       position: absolute;
       left: 50%;
       bottom: clamp(14px, 3.2vw, 42px);
-      z-index: 10;
+      z-index: 20;
       max-width: min(88%, 760px);
       padding: 11px 18px 12px;
       border: 1px solid var(--label-border);
@@ -136,7 +105,7 @@
         inset 0 0 16px rgba(154, 216, 255, 0.04);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      color: #f6fbff;
+      color: var(--label-text);
       font-size: clamp(13px, 1.25vw, 20px);
       font-weight: 600;
       letter-spacing: 0.08em;
@@ -147,9 +116,7 @@
       text-overflow: ellipsis;
       opacity: 0;
       transform: translate(-50%, 10px);
-      transition:
-        opacity var(--transition),
-        transform var(--transition);
+      transition: opacity var(--transition), transform var(--transition);
       pointer-events: none;
     }
 
@@ -161,19 +128,17 @@
     .tap-guide {
       position: absolute;
       left: 50%;
-      bottom: calc(clamp(14px, 3.2vw, 42px) + 51px);
-      z-index: 10;
+      bottom: calc(clamp(14px, 3.2vw, 42px) + 52px);
+      z-index: 20;
       padding: 5px 10px;
       border-radius: 999px;
-      background: rgba(3, 7, 15, 0.72);
-      color: rgba(234, 246, 255, 0.82);
+      background: rgba(3, 7, 15, 0.76);
+      color: rgba(234, 246, 255, 0.84);
       font-size: 11px;
       letter-spacing: 0.04em;
       opacity: 0;
       transform: translate(-50%, 8px);
-      transition:
-        opacity var(--transition),
-        transform var(--transition);
+      transition: opacity var(--transition), transform var(--transition);
       pointer-events: none;
     }
 
@@ -182,17 +147,28 @@
       transform: translate(-50%, 0);
     }
 
-    .loading-error {
+    .loading-message {
       position: absolute;
       inset: 0;
-      display: none;
+      z-index: 30;
+      display: grid;
       place-items: center;
       padding: 24px;
       background: #090b11;
       color: #fff;
       text-align: center;
       line-height: 1.8;
-      z-index: 20;
+    }
+
+    .loading-message[hidden] { display: none; }
+
+    .keyboard-links {
+      position: fixed;
+      left: -10000px;
+      top: auto;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
     }
 
     @media (hover: none), (pointer: coarse) {
@@ -201,13 +177,12 @@
       }
 
       .tap-guide {
-        bottom: calc(max(18px, env(safe-area-inset-bottom)) + 48px);
+        bottom: calc(max(18px, env(safe-area-inset-bottom)) + 49px);
       }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .character-link .bright-layer,
-      .character-link .outline,
+      .highlight-layer,
       .destination-label,
       .tap-guide {
         transition: none;
@@ -218,279 +193,300 @@
 
 <body>
   <main class="page">
-    <div class="scene" id="scene">
-      <svg
-        viewBox="0 0 1672 941"
-        role="img"
-        aria-labelledby="sceneTitle sceneDescription"
-        preserveAspectRatio="xMidYMid meet"
+    <div
+      class="scene"
+      id="scene"
+      role="application"
+      aria-label="サイバーパンク列車のリンク画面。人物を選択すると対応するリンクへ移動します。"
+    >
+      <img
+        class="background"
+        id="backgroundImage"
+        src="./cyber-train.png"
+        width="1672"
+        height="941"
+        alt="サイバーパンク都市を走る列車内の5人"
+        draggable="false"
       >
-        <title id="sceneTitle">サイバーパンク列車のリンク画面</title>
-        <desc id="sceneDescription">
-          5人の人物それぞれが異なるリンクになっています。
-        </desc>
 
-        <defs>
-          <!-- 画像ファイルは index.html と同じ場所へ置きます -->
-          <image
-            id="backgroundImage"
-            href="./cyber-train.png"
-            x="0"
-            y="0"
-            width="1672"
-            height="941"
-            preserveAspectRatio="none"
-          />
+      <canvas class="highlight-layer" width="1672" height="941" aria-hidden="true"></canvas>
+      <canvas class="highlight-layer" width="1672" height="941" aria-hidden="true"></canvas>
+      <canvas class="highlight-layer" width="1672" height="941" aria-hidden="true"></canvas>
+      <canvas class="highlight-layer" width="1672" height="941" aria-hidden="true"></canvas>
+      <canvas class="highlight-layer" width="1672" height="941" aria-hidden="true"></canvas>
 
-          <!-- 左端：写真家 -->
-          <clipPath id="clip-photography" clipPathUnits="userSpaceOnUse">
-            <path d="M0 264 L36 233 L89 219 L151 213 L220 221 L276 249 L310 286 L337 352 L351 422 L367 478 L405 557 L445 676 L474 801 L486 941 L0 941 Z" />
-          </clipPath>
-
-          <!-- 左中央：小説家 -->
-          <clipPath id="clip-novels" clipPathUnits="userSpaceOnUse">
-            <path d="M397 336 L426 286 L467 261 L518 252 L570 267 L609 303 L626 351 L638 416 L680 456 L741 494 L792 575 L824 680 L854 793 L890 941 L479 941 L457 856 L448 738 L432 645 L411 572 L386 507 Z" />
-          </clipPath>
-
-          <!-- 中央：クリエイティブ -->
-          <clipPath id="clip-creative" clipPathUnits="userSpaceOnUse">
-            <path d="M701 88 L729 36 L775 9 L829 5 L876 28 L901 73 L899 126 L885 169 L920 194 L958 256 L970 345 L961 436 L947 522 L962 609 L987 720 L1009 839 L981 892 L930 906 L882 866 L856 754 L829 670 L804 592 L772 527 L734 452 L704 375 L681 293 L678 211 Z" />
-          </clipPath>
-
-          <!-- 右中央：音楽 -->
-          <clipPath id="clip-music" clipPathUnits="userSpaceOnUse">
-            <path d="M1007 122 L1029 70 L1074 35 L1128 27 L1172 44 L1206 83 L1214 135 L1203 181 L1238 204 L1268 261 L1280 338 L1282 433 L1274 535 L1298 640 L1324 752 L1335 856 L1305 918 L1248 941 L1168 941 L1129 884 L1127 801 L1106 713 L1086 620 L1064 527 L1044 432 L1027 341 L1002 260 Z" />
-          </clipPath>
-
-          <!-- 右端：SNS -->
-          <clipPath id="clip-social" clipPathUnits="userSpaceOnUse">
-            <path d="M1329 327 L1362 277 L1411 247 L1468 239 L1518 256 L1557 293 L1574 344 L1572 395 L1593 432 L1620 485 L1642 555 L1672 630 L1672 941 L1255 941 L1266 881 L1286 813 L1309 749 L1324 681 L1325 603 L1309 525 L1307 448 Z" />
-          </clipPath>
-        </defs>
-
-        <!-- 元画像 -->
-        <use href="#backgroundImage" />
-
-        <!--
-          href          : 実際のリンク先
-          data-label    : 画面に表示するリンク先名称
-          target="_blank" を付けると新しいタブで開きます
-        -->
-
-        <a
-          class="character-link"
-          href="https://example.com/photography"
-          data-label="Photography Gallery"
-          aria-label="Photography Galleryへ移動"
-        >
-          <use
-            class="bright-layer"
-            href="#backgroundImage"
-            clip-path="url(#clip-photography)"
-          />
-          <path
-            class="outline"
-            d="M0 264 L36 233 L89 219 L151 213 L220 221 L276 249 L310 286 L337 352 L351 422 L367 478 L405 557 L445 676 L474 801 L486 941 L0 941 Z"
-          />
-          <path
-            class="hit-area"
-            d="M0 264 L36 233 L89 219 L151 213 L220 221 L276 249 L310 286 L337 352 L351 422 L367 478 L405 557 L445 676 L474 801 L486 941 L0 941 Z"
-          />
-        </a>
-
-        <a
-          class="character-link"
-          href="https://example.com/novels"
-          data-label="Novel Archive"
-          aria-label="Novel Archiveへ移動"
-        >
-          <use
-            class="bright-layer"
-            href="#backgroundImage"
-            clip-path="url(#clip-novels)"
-          />
-          <path
-            class="outline"
-            d="M397 336 L426 286 L467 261 L518 252 L570 267 L609 303 L626 351 L638 416 L680 456 L741 494 L792 575 L824 680 L854 793 L890 941 L479 941 L457 856 L448 738 L432 645 L411 572 L386 507 Z"
-          />
-          <path
-            class="hit-area"
-            d="M397 336 L426 286 L467 261 L518 252 L570 267 L609 303 L626 351 L638 416 L680 456 L741 494 L792 575 L824 680 L854 793 L890 941 L479 941 L457 856 L448 738 L432 645 L411 572 L386 507 Z"
-          />
-        </a>
-
-        <a
-          class="character-link"
-          href="https://example.com/creative"
-          data-label="Creative Works"
-          aria-label="Creative Worksへ移動"
-        >
-          <use
-            class="bright-layer"
-            href="#backgroundImage"
-            clip-path="url(#clip-creative)"
-          />
-          <path
-            class="outline"
-            d="M701 88 L729 36 L775 9 L829 5 L876 28 L901 73 L899 126 L885 169 L920 194 L958 256 L970 345 L961 436 L947 522 L962 609 L987 720 L1009 839 L981 892 L930 906 L882 866 L856 754 L829 670 L804 592 L772 527 L734 452 L704 375 L681 293 L678 211 Z"
-          />
-          <path
-            class="hit-area"
-            d="M701 88 L729 36 L775 9 L829 5 L876 28 L901 73 L899 126 L885 169 L920 194 L958 256 L970 345 L961 436 L947 522 L962 609 L987 720 L1009 839 L981 892 L930 906 L882 866 L856 754 L829 670 L804 592 L772 527 L734 452 L704 375 L681 293 L678 211 Z"
-          />
-        </a>
-
-        <a
-          class="character-link"
-          href="https://example.com/music"
-          data-label="Music Channel"
-          aria-label="Music Channelへ移動"
-        >
-          <use
-            class="bright-layer"
-            href="#backgroundImage"
-            clip-path="url(#clip-music)"
-          />
-          <path
-            class="outline"
-            d="M1007 122 L1029 70 L1074 35 L1128 27 L1172 44 L1206 83 L1214 135 L1203 181 L1238 204 L1268 261 L1280 338 L1282 433 L1274 535 L1298 640 L1324 752 L1335 856 L1305 918 L1248 941 L1168 941 L1129 884 L1127 801 L1106 713 L1086 620 L1064 527 L1044 432 L1027 341 L1002 260 Z"
-          />
-          <path
-            class="hit-area"
-            d="M1007 122 L1029 70 L1074 35 L1128 27 L1172 44 L1206 83 L1214 135 L1203 181 L1238 204 L1268 261 L1280 338 L1282 433 L1274 535 L1298 640 L1324 752 L1335 856 L1305 918 L1248 941 L1168 941 L1129 884 L1127 801 L1106 713 L1086 620 L1064 527 L1044 432 L1027 341 L1002 260 Z"
-          />
-        </a>
-
-        <a
-          class="character-link"
-          href="https://example.com/social"
-          data-label="Social Media"
-          aria-label="Social Mediaへ移動"
-        >
-          <use
-            class="bright-layer"
-            href="#backgroundImage"
-            clip-path="url(#clip-social)"
-          />
-          <path
-            class="outline"
-            d="M1329 327 L1362 277 L1411 247 L1468 239 L1518 256 L1557 293 L1574 344 L1572 395 L1593 432 L1620 485 L1642 555 L1672 630 L1672 941 L1255 941 L1266 881 L1286 813 L1309 749 L1324 681 L1325 603 L1309 525 L1307 448 Z"
-          />
-          <path
-            class="hit-area"
-            d="M1329 327 L1362 277 L1411 247 L1468 239 L1518 256 L1557 293 L1574 344 L1572 395 L1593 432 L1620 485 L1642 555 L1672 630 L1672 941 L1255 941 L1266 881 L1286 813 L1309 749 L1324 681 L1325 603 L1309 525 L1307 448 Z"
-          />
-        </a>
-      </svg>
-
-      <div
-        class="destination-label"
-        id="destinationLabel"
-        role="status"
-        aria-live="polite"
-      ></div>
-
-      <div class="tap-guide" id="tapGuide" aria-hidden="true">
-        もう一度タップして移動
-      </div>
-
-      <div class="loading-error" id="loadingError">
-        画像を読み込めませんでした。<br>
-        「cyber-train.png」が index.html と同じ場所にあるか確認してください。
-      </div>
+      <div class="destination-label" id="destinationLabel" role="status" aria-live="polite"></div>
+      <div class="tap-guide" id="tapGuide" aria-hidden="true">もう一度タップして移動</div>
+      <div class="loading-message" id="loadingMessage">画像とマスクを読み込んでいます…</div>
     </div>
+
+    <nav class="keyboard-links" aria-label="リンク一覧">
+      <a href="https://example.com/photography">Photography Gallery</a>
+      <a href="https://example.com/novels">Novel Archive</a>
+      <a href="https://example.com/creative">Creative Works</a>
+      <a href="https://example.com/music">Music Channel</a>
+      <a href="https://example.com/social">Social Media</a>
+    </nav>
   </main>
 
   <script>
     (() => {
       "use strict";
 
-      const links = [...document.querySelectorAll(".character-link")];
+      const WIDTH = 1672;
+      const HEIGHT = 941;
+      const ALPHA_THRESHOLD = 34;
+
+      /*
+       * 左から順番に設定します。
+       * url   : 実際のリンク先
+       * label : 画面に表示するリンク先名称
+       * mask  : masksフォルダ内の白黒マスク画像
+       */
+      const characters = [
+        {
+          mask: "./masks/character-01.png",
+          url: "https://example.com/photography",
+          label: "Photography Gallery"
+        },
+        {
+          mask: "./masks/character-02.png",
+          url: "https://example.com/novels",
+          label: "Novel Archive"
+        },
+        {
+          mask: "./masks/character-03.png",
+          url: "https://example.com/creative",
+          label: "Creative Works"
+        },
+        {
+          mask: "./masks/character-04.png",
+          url: "https://example.com/music",
+          label: "Music Channel"
+        },
+        {
+          mask: "./masks/character-05.png",
+          url: "https://example.com/social",
+          label: "Social Media"
+        }
+      ];
+
+      const scene = document.getElementById("scene");
+      const backgroundImage = document.getElementById("backgroundImage");
+      const canvases = [...document.querySelectorAll(".highlight-layer")];
       const label = document.getElementById("destinationLabel");
       const tapGuide = document.getElementById("tapGuide");
-      const scene = document.getElementById("scene");
-      const loadingError = document.getElementById("loadingError");
+      const loadingMessage = document.getElementById("loadingMessage");
+      const keyboardLinks = [...document.querySelectorAll(".keyboard-links a")];
 
-      const isTouchLike = window.matchMedia(
-        "(hover: none), (pointer: coarse)"
-      ).matches;
+      const isTouchLike = window.matchMedia("(hover: none), (pointer: coarse)").matches;
 
-      let selectedLink = null;
+      let activeIndex = -1;
+      let selectedIndex = -1;
+      let ready = false;
+      let pointerInside = false;
 
-      function showLabel(link, showGuide = false) {
-        const text = link?.dataset.label?.trim();
-        if (!text) return;
-
-        label.textContent = text;
-        label.classList.add("is-visible");
-        tapGuide.classList.toggle("is-visible", showGuide);
+      function loadImage(src) {
+        return new Promise((resolve, reject) => {
+          const image = new Image();
+          image.decoding = "async";
+          image.onload = () => resolve(image);
+          image.onerror = () => reject(new Error(`読み込み失敗: ${src}`));
+          image.src = src;
+        });
       }
 
-      function hideLabel() {
-        label.classList.remove("is-visible");
-        tapGuide.classList.remove("is-visible");
+      function waitForBackground() {
+        if (backgroundImage.complete && backgroundImage.naturalWidth > 0) {
+          return Promise.resolve(backgroundImage);
+        }
+
+        return new Promise((resolve, reject) => {
+          backgroundImage.addEventListener("load", () => resolve(backgroundImage), { once: true });
+          backgroundImage.addEventListener(
+            "error",
+            () => reject(new Error("cyber-train.pngを読み込めませんでした。")),
+            { once: true }
+          );
+        });
+      }
+
+      function createMaskAlpha(maskImage) {
+        const canvas = document.createElement("canvas");
+        canvas.width = WIDTH;
+        canvas.height = HEIGHT;
+
+        const context = canvas.getContext("2d", { willReadFrequently: true });
+        context.drawImage(maskImage, 0, 0, WIDTH, HEIGHT);
+
+        const imageData = context.getImageData(0, 0, WIDTH, HEIGHT);
+        const data = imageData.data;
+        const alpha = new Uint8ClampedArray(WIDTH * HEIGHT);
+
+        for (let pixel = 0, index = 0; pixel < alpha.length; pixel += 1, index += 4) {
+          const luminance = Math.round(
+            data[index] * 0.2126 +
+            data[index + 1] * 0.7152 +
+            data[index + 2] * 0.0722
+          );
+
+          alpha[pixel] = luminance;
+        }
+
+        return alpha;
+      }
+
+      function buildHighlight(canvas, maskImage) {
+        const context = canvas.getContext("2d");
+        context.clearRect(0, 0, WIDTH, HEIGHT);
+
+        // 元絵を描き、白黒マスクの明度を透明度として適用します。
+        context.drawImage(backgroundImage, 0, 0, WIDTH, HEIGHT);
+        context.globalCompositeOperation = "destination-in";
+        context.drawImage(maskImage, 0, 0, WIDTH, HEIGHT);
+        context.globalCompositeOperation = "source-over";
+      }
+
+      function pointToImageCoordinates(event) {
+        const rect = scene.getBoundingClientRect();
+
+        return {
+          x: Math.max(0, Math.min(WIDTH - 1, Math.floor((event.clientX - rect.left) * WIDTH / rect.width))),
+          y: Math.max(0, Math.min(HEIGHT - 1, Math.floor((event.clientY - rect.top) * HEIGHT / rect.height)))
+        };
+      }
+
+      function characterAt(x, y) {
+        const pixel = y * WIDTH + x;
+
+        // 人物が重なる場所では、画面上で右側にいる人物を優先します。
+        for (let index = characters.length - 1; index >= 0; index -= 1) {
+          if (characters[index].alpha[pixel] >= ALPHA_THRESHOLD) {
+            return index;
+          }
+        }
+
+        return -1;
+      }
+
+      function showCharacter(index, showTapGuide = false) {
+        if (activeIndex === index && label.classList.contains("is-visible")) {
+          tapGuide.classList.toggle("is-visible", showTapGuide);
+          return;
+        }
+
+        canvases.forEach((canvas, canvasIndex) => {
+          canvas.classList.toggle("is-visible", canvasIndex === index);
+        });
+
+        activeIndex = index;
+
+        if (index < 0) {
+          label.classList.remove("is-visible");
+          tapGuide.classList.remove("is-visible");
+          scene.style.cursor = "default";
+          return;
+        }
+
+        label.textContent = characters[index].label;
+        label.classList.add("is-visible");
+        tapGuide.classList.toggle("is-visible", showTapGuide);
+        scene.style.cursor = "pointer";
       }
 
       function clearSelection() {
-        if (selectedLink) {
-          selectedLink.classList.remove("is-selected");
-        }
-        selectedLink = null;
-        hideLabel();
+        selectedIndex = -1;
+        showCharacter(-1, false);
       }
 
-      links.forEach((link) => {
-        link.addEventListener("mouseenter", () => {
-          if (!isTouchLike) showLabel(link, false);
-        });
+      scene.addEventListener("pointerenter", () => {
+        pointerInside = true;
+      });
 
-        link.addEventListener("mouseleave", () => {
-          if (!isTouchLike && document.activeElement !== link) {
-            hideLabel();
+      scene.addEventListener("pointerleave", () => {
+        pointerInside = false;
+
+        if (!isTouchLike) {
+          showCharacter(-1, false);
+        }
+      });
+
+      scene.addEventListener("pointermove", (event) => {
+        if (!ready || isTouchLike) {
+          return;
+        }
+
+        const point = pointToImageCoordinates(event);
+        showCharacter(characterAt(point.x, point.y), false);
+      });
+
+      scene.addEventListener("click", (event) => {
+        if (!ready) {
+          return;
+        }
+
+        const point = pointToImageCoordinates(event);
+        const index = characterAt(point.x, point.y);
+
+        if (index < 0) {
+          if (isTouchLike) {
+            clearSelection();
           }
-        });
+          return;
+        }
+
+        if (!isTouchLike) {
+          window.location.href = characters[index].url;
+          return;
+        }
+
+        if (selectedIndex !== index) {
+          selectedIndex = index;
+          showCharacter(index, true);
+          return;
+        }
+
+        window.location.href = characters[index].url;
+      });
+
+      keyboardLinks.forEach((link, index) => {
+        link.href = characters[index].url;
+        link.textContent = characters[index].label;
 
         link.addEventListener("focus", () => {
-          showLabel(link, false);
+          if (ready) {
+            showCharacter(index, false);
+          }
         });
 
         link.addEventListener("blur", () => {
-          if (!isTouchLike) hideLabel();
-        });
-
-        link.addEventListener("click", (event) => {
-          if (!isTouchLike) return;
-
-          if (selectedLink !== link) {
-            event.preventDefault();
-            clearSelection();
-            selectedLink = link;
-            link.classList.add("is-selected");
-            showLabel(link, true);
-            return;
+          if (ready && !pointerInside) {
+            showCharacter(-1, false);
           }
-
-          // 同じ人物を2回目にタップした場合は通常どおり移動します。
         });
       });
 
-      scene.addEventListener("pointerdown", (event) => {
-        if (!isTouchLike) return;
-        if (!event.target.closest(".character-link")) {
-          clearSelection();
-        }
-      });
+      Promise.all([
+        waitForBackground(),
+        ...characters.map((character) => loadImage(character.mask))
+      ])
+        .then((loaded) => {
+          const maskImages = loaded.slice(1);
 
-      document.addEventListener("keydown", (event) => {
-        if (event.key === "Escape") clearSelection();
-      });
+          maskImages.forEach((maskImage, index) => {
+            characters[index].alpha = createMaskAlpha(maskImage);
+            buildHighlight(canvases[index], maskImage);
+          });
 
-      // SVG内の画像読み込み失敗を検知します。
-      const probe = new Image();
-      probe.src = "./cyber-train.png";
-      probe.addEventListener("error", () => {
-        loadingError.style.display = "grid";
-      });
+          ready = true;
+          loadingMessage.hidden = true;
+        })
+        .catch((error) => {
+          console.error(error);
+          loadingMessage.innerHTML =
+            "画像を読み込めませんでした。<br>" +
+            "index.html、cyber-train.png、masksフォルダの配置とファイル名を確認してください。";
+        });
     })();
   </script>
 </body>
