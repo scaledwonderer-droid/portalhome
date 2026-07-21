@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="dark">
   <title>Cyber Train Links</title>
+  <!-- v4: 白黒マスクの明度を正しく透明度へ変換 -->
 
   <style>
     :root {
@@ -340,14 +341,38 @@
       }
 
       function buildHighlight(canvas, maskImage) {
-        const context = canvas.getContext("2d");
+        const context = canvas.getContext("2d", { willReadFrequently: true });
         context.clearRect(0, 0, WIDTH, HEIGHT);
 
-        // 元絵を描き、白黒マスクの明度を透明度として適用します。
+        // 元絵を描画します。
         context.drawImage(backgroundImage, 0, 0, WIDTH, HEIGHT);
-        context.globalCompositeOperation = "destination-in";
-        context.drawImage(maskImage, 0, 0, WIDTH, HEIGHT);
-        context.globalCompositeOperation = "source-over";
+        const highlightData = context.getImageData(0, 0, WIDTH, HEIGHT);
+
+        // 白黒マスクを別Canvasへ描画し、明度を透明度へ変換します。
+        // 黒背景のPNGは画像全体に不透明度があるため、
+        // destination-inではなくピクセル単位でアルファを作ります。
+        const maskCanvas = document.createElement("canvas");
+        maskCanvas.width = WIDTH;
+        maskCanvas.height = HEIGHT;
+
+        const maskContext = maskCanvas.getContext("2d", { willReadFrequently: true });
+        maskContext.drawImage(maskImage, 0, 0, WIDTH, HEIGHT);
+        const maskData = maskContext.getImageData(0, 0, WIDTH, HEIGHT).data;
+
+        const pixels = highlightData.data;
+
+        for (let index = 0; index < pixels.length; index += 4) {
+          const luminance = Math.round(
+            maskData[index] * 0.2126 +
+            maskData[index + 1] * 0.7152 +
+            maskData[index + 2] * 0.0722
+          );
+
+          // 白い人物部分だけを残し、黒い背景は完全に透明にします。
+          pixels[index + 3] = luminance;
+        }
+
+        context.putImageData(highlightData, 0, 0);
       }
 
       function pointToImageCoordinates(event) {
