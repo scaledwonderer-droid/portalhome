@@ -170,8 +170,57 @@
     }
 
     .debug-panel h2 {
-      margin: 0 0 10px;
+      margin: 0;
       font-size: 15px;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .panel-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .panel-actions button {
+      width: auto;
+      padding: 6px 9px;
+      font-size: 12px;
+    }
+
+    .debug-panel.is-left {
+      right: auto;
+      left: 16px;
+    }
+
+    .debug-panel.is-hidden {
+      display: none;
+    }
+
+    .show-panel-button {
+      position: fixed;
+      right: 16px;
+      top: 16px;
+      z-index: 101;
+      display: none;
+      width: auto;
+      border: 1px solid rgba(167,221,255,0.35);
+      border-radius: 999px;
+      background: rgba(7,11,19,0.86);
+      color: #f5fbff;
+      padding: 9px 13px;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .show-panel-button.is-visible {
+      display: block;
     }
 
     .debug-panel .row { margin-bottom: 10px; }
@@ -267,7 +316,13 @@
   </main>
 
   <aside class="debug-panel">
-    <h2>マスク位置調整</h2>
+    <div class="panel-header">
+      <h2>マスク位置調整</h2>
+      <div class="panel-actions">
+        <button id="movePanelButton" type="button">左右移動</button>
+        <button id="hidePanelButton" type="button">隠す</button>
+      </div>
+    </div>
 
     <div class="row">
       <label for="characterSelect">人物</label>
@@ -305,6 +360,8 @@
     </div>
   </aside>
 
+  <button class="show-panel-button" id="showPanelButton" type="button">調整窓を表示</button>
+
   <script>
     (() => {
       "use strict";
@@ -339,6 +396,10 @@
       const configOutput = document.getElementById("configOutput");
       const resetCurrentButton = document.getElementById("resetCurrentButton");
       const copyButton = document.getElementById("copyButton");
+      const debugPanel = document.querySelector(".debug-panel");
+      const movePanelButton = document.getElementById("movePanelButton");
+      const hidePanelButton = document.getElementById("hidePanelButton");
+      const showPanelButton = document.getElementById("showPanelButton");
 
       const isTouchLike = window.matchMedia("(hover: none), (pointer: coarse)").matches;
 
@@ -529,6 +590,12 @@
 
       characterSelect.addEventListener("change", () => {
         editingIndex = Number(characterSelect.value);
+
+        if (editingIndex === 4) {
+          debugPanel.classList.add("is-left");
+          movePanelButton.textContent = "右へ移動";
+        }
+
         syncControlsFromCharacter();
       });
 
@@ -552,6 +619,23 @@
         } catch (error) {
           alert("コピーできませんでした。出力欄を手動でコピーしてください。");
         }
+      });
+
+      movePanelButton.addEventListener("click", () => {
+        debugPanel.classList.toggle("is-left");
+        movePanelButton.textContent = debugPanel.classList.contains("is-left")
+          ? "右へ移動"
+          : "左へ移動";
+      });
+
+      hidePanelButton.addEventListener("click", () => {
+        debugPanel.classList.add("is-hidden");
+        showPanelButton.classList.add("is-visible");
+      });
+
+      showPanelButton.addEventListener("click", () => {
+        debugPanel.classList.remove("is-hidden");
+        showPanelButton.classList.remove("is-visible");
       });
 
       scene.addEventListener("pointerenter", () => { pointerInside = true; });
