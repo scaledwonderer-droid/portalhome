@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="dark">
-  <title>Cyber Train Links - Mask Adjuster</title>
+  <title>Cyber Train Links</title>
   <style>
     :root {
       --label-bg: rgba(5, 9, 19, 0.84);
@@ -151,171 +151,6 @@
     }
 
     .loading-message[hidden] { display: none; }
-
-    .debug-panel {
-      position: fixed;
-      right: 16px;
-      top: 16px;
-      z-index: 100;
-      width: min(360px, calc(100vw - 32px));
-      padding: 14px;
-      border: 1px solid rgba(167, 221, 255, 0.35);
-      border-radius: 14px;
-      background: rgba(7, 11, 19, 0.82);
-      box-shadow: 0 0 24px rgba(0, 0, 0, 0.25);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      font-size: 13px;
-      line-height: 1.45;
-    }
-
-    .debug-panel h2 {
-      margin: 0;
-      font-size: 15px;
-    }
-
-    .panel-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    .panel-actions {
-      display: flex;
-      gap: 6px;
-    }
-
-    .panel-actions button {
-      width: auto;
-      padding: 6px 9px;
-      font-size: 12px;
-    }
-
-    .debug-panel.is-left {
-      right: auto;
-      left: 16px;
-    }
-
-    .debug-panel.is-hidden {
-      display: none;
-    }
-
-    .show-panel-button {
-      position: fixed;
-      right: 16px;
-      top: 16px;
-      z-index: 101;
-      display: none;
-      width: auto;
-      border: 1px solid rgba(167,221,255,0.35);
-      border-radius: 999px;
-      background: rgba(7,11,19,0.86);
-      color: #f5fbff;
-      padding: 9px 13px;
-      cursor: pointer;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-    }
-
-    .show-panel-button.is-visible {
-      display: block;
-    }
-
-    .debug-panel .row { margin-bottom: 10px; }
-    .debug-panel label { display: block; margin-bottom: 4px; }
-    .debug-panel select,
-    .debug-panel textarea,
-    .debug-panel button {
-      width: 100%;
-    }
-
-    .adjust-control {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 92px;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .adjust-control input[type="range"] {
-      width: 100%;
-      min-width: 0;
-    }
-
-    .adjust-control input[type="number"] {
-      width: 92px;
-      padding: 7px 8px;
-      border: 1px solid rgba(167, 221, 255, 0.32);
-      border-radius: 8px;
-      background: rgba(0, 0, 0, 0.32);
-      color: #f4fbff;
-      font: inherit;
-      text-align: right;
-    }
-
-    .adjust-control input[type="number"]:focus {
-      outline: 2px solid rgba(133, 209, 255, 0.58);
-      outline-offset: 1px;
-    }
-
-    .debug-panel textarea {
-      min-height: 150px;
-      resize: vertical;
-      background: rgba(0,0,0,0.28);
-      color: #eaf5ff;
-      border: 1px solid rgba(167,221,255,0.28);
-      border-radius: 8px;
-      padding: 8px;
-      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-      font-size: 12px;
-    }
-
-    .debug-panel .value {
-      font-weight: 700;
-      color: #b7e8ff;
-      margin-left: 6px;
-    }
-
-    .debug-panel .buttons {
-      display: grid;
-      gap: 8px;
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .debug-panel button {
-      border: 1px solid rgba(167,221,255,0.28);
-      border-radius: 10px;
-      background: rgba(255,255,255,0.05);
-      color: #f5fbff;
-      padding: 8px 10px;
-      cursor: pointer;
-    }
-
-    .debug-panel .hint {
-      opacity: 0.82;
-      font-size: 12px;
-    }
-
-    .keyboard-links {
-      position: fixed;
-      left: -10000px;
-      top: auto;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-    }
-
-    @media (max-width: 900px) {
-      .debug-panel {
-        left: 12px;
-        right: 12px;
-        top: auto;
-        bottom: 12px;
-        width: auto;
-        max-height: 45svh;
-        overflow: auto;
-      }
     }
   </style>
 </head>
@@ -342,62 +177,6 @@
     </nav>
   </main>
 
-  <aside class="debug-panel">
-    <div class="panel-header">
-      <h2>マスク位置調整</h2>
-      <div class="panel-actions">
-        <button id="movePanelButton" type="button">左右移動</button>
-        <button id="hidePanelButton" type="button">隠す</button>
-      </div>
-    </div>
-
-    <div class="row">
-      <label for="characterSelect">人物</label>
-      <select id="characterSelect"></select>
-    </div>
-
-    <div class="row">
-      <label for="offsetXNumber">X移動</label>
-      <div class="adjust-control">
-        <input id="offsetX" type="range" min="-800" max="800" step="1" value="0">
-        <input id="offsetXNumber" type="number" min="-800" max="800" step="1" value="0" inputmode="numeric" aria-label="X移動の数値">
-      </div>
-    </div>
-
-    <div class="row">
-      <label for="offsetYNumber">Y移動</label>
-      <div class="adjust-control">
-        <input id="offsetY" type="range" min="-800" max="800" step="1" value="0">
-        <input id="offsetYNumber" type="number" min="-800" max="800" step="1" value="0" inputmode="numeric" aria-label="Y移動の数値">
-      </div>
-    </div>
-
-    <div class="row">
-      <label for="scaleNumber">拡大率</label>
-      <div class="adjust-control">
-        <input id="scale" type="range" min="0.300" max="2.000" step="0.001" value="1.000">
-        <input id="scaleNumber" type="number" min="0.300" max="2.000" step="0.001" value="1.000" inputmode="decimal" aria-label="拡大率の数値">
-      </div>
-    </div>
-
-    <div class="buttons row">
-      <button id="resetCurrentButton" type="button">現在の人物をリセット</button>
-      <button id="copyButton" type="button">設定をコピー</button>
-    </div>
-
-    <div class="row">
-      <label for="configOutput">characters 配列へ戻す設定値</label>
-      <textarea id="configOutput" readonly></textarea>
-    </div>
-
-    <div class="hint">
-      人物を選び、スライダーまたは右側の数値欄で位置と大きさを調整できます。<br>
-      数値欄は直接入力でき、X・Yは1px単位、拡大率は0.001単位で微調整できます。
-    </div>
-  </aside>
-
-  <button class="show-panel-button" id="showPanelButton" type="button">調整窓を表示</button>
-
   <script>
     (() => {
       "use strict";
@@ -407,11 +186,36 @@
       const ALPHA_THRESHOLD = 34;
 
       const characters = [
-        { mask: "./masks/character-01.png", url: "https://example.com/photography", label: "Photography Gallery", name: "1: 写真家", transform: { x: 0, y: 0, scale: 1 } },
-        { mask: "./masks/character-02.png", url: "https://example.com/novels",      label: "Novel Archive",       name: "2: 小説家", transform: { x: 0, y: 0, scale: 1 } },
-        { mask: "./masks/character-03.png", url: "https://example.com/creative",    label: "Creative Works",     name: "3: クリエイター", transform: { x: 0, y: 0, scale: 1 } },
-        { mask: "./masks/character-04.png", url: "https://example.com/music",       label: "Music Channel",      name: "4: 音楽家", transform: { x: 0, y: 0, scale: 1 } },
-        { mask: "./masks/character-05.png", url: "https://example.com/social",      label: "Social Media",       name: "5: SNSマネージャー", transform: { x: 0, y: 0, scale: 1 } }
+        {
+          mask: "./masks/character-01.png",
+          url: "https://example.com/photography",
+          label: "Photography Gallery",
+          transform: { x: -73, y: 5, scale: 0.991 }
+        },
+        {
+          mask: "./masks/character-02.png",
+          url: "https://example.com/novels",
+          label: "Novel Archive",
+          transform: { x: -88, y: 112, scale: 0.830 }
+        },
+        {
+          mask: "./masks/character-03.png",
+          url: "https://example.com/creative",
+          label: "Creative Works",
+          transform: { x: 0, y: 0, scale: 1.000 }
+        },
+        {
+          mask: "./masks/character-04.png",
+          url: "https://example.com/music",
+          label: "Music Channel",
+          transform: { x: 86, y: -2, scale: 0.985 }
+        },
+        {
+          mask: "./masks/character-05.png",
+          url: "https://example.com/social",
+          label: "Social Media",
+          transform: { x: 57, y: 25, scale: 0.930 }
+        }
       ];
 
       const scene = document.getElementById("scene");
@@ -422,28 +226,12 @@
       const loadingMessage = document.getElementById("loadingMessage");
       const keyboardLinks = [...document.querySelectorAll(".keyboard-links a")];
 
-      const characterSelect = document.getElementById("characterSelect");
-      const offsetXInput = document.getElementById("offsetX");
-      const offsetYInput = document.getElementById("offsetY");
-      const scaleInput = document.getElementById("scale");
-      const offsetXNumber = document.getElementById("offsetXNumber");
-      const offsetYNumber = document.getElementById("offsetYNumber");
-      const scaleNumber = document.getElementById("scaleNumber");
-      const configOutput = document.getElementById("configOutput");
-      const resetCurrentButton = document.getElementById("resetCurrentButton");
-      const copyButton = document.getElementById("copyButton");
-      const debugPanel = document.querySelector(".debug-panel");
-      const movePanelButton = document.getElementById("movePanelButton");
-      const hidePanelButton = document.getElementById("hidePanelButton");
-      const showPanelButton = document.getElementById("showPanelButton");
-
       const isTouchLike = window.matchMedia("(hover: none), (pointer: coarse)").matches;
 
       let activeIndex = -1;
       let selectedIndex = -1;
       let ready = false;
       let pointerInside = false;
-      let editingIndex = 0;
       let maskImages = [];
 
       function loadImage(src) {
@@ -580,146 +368,19 @@
         showCharacter(-1, false);
       }
 
-      function refreshConfigOutput() {
-        const lines = characters.map((character, index) => {
-          const t = character.transform;
-          return `  { mask: "${character.mask}", url: "${character.url}", label: "${character.label}", transform: { x: ${t.x}, y: ${t.y}, scale: ${t.scale.toFixed(3)} } }${index === characters.length - 1 ? "" : ","}`;
-        });
-        configOutput.value = "[\n" + lines.join("\n") + "\n]";
-      }
-
-      function syncControlsFromCharacter() {
-        const transform = characters[editingIndex].transform;
-        offsetXInput.value = String(transform.x);
-        offsetYInput.value = String(transform.y);
-        scaleInput.value = String(transform.scale.toFixed(3));
-        offsetXNumber.value = String(transform.x);
-        offsetYNumber.value = String(transform.y);
-        scaleNumber.value = Number(transform.scale).toFixed(3);
-        showCharacter(editingIndex, false);
-      }
-
-      function clamp(value, min, max) {
-        return Math.min(max, Math.max(min, value));
-      }
-
-      function applyControlsToCharacter() {
-        const transform = characters[editingIndex].transform;
-        transform.x = Number(offsetXInput.value);
-        transform.y = Number(offsetYInput.value);
-        transform.scale = Number(scaleInput.value);
-
-        offsetXNumber.value = String(transform.x);
-        offsetYNumber.value = String(transform.y);
-        scaleNumber.value = Number(transform.scale).toFixed(3);
-
-        if (ready) {
-          rebuildCharacter(editingIndex);
-          showCharacter(editingIndex, false);
-        }
-
-        refreshConfigOutput();
-      }
-
-      characters.forEach((character, index) => {
-        const option = document.createElement("option");
-        option.value = String(index);
-        option.textContent = character.name;
-        characterSelect.appendChild(option);
-      });
-
-      characterSelect.addEventListener("change", () => {
-        editingIndex = Number(characterSelect.value);
-
-        if (editingIndex === 4) {
-          debugPanel.classList.add("is-left");
-          movePanelButton.textContent = "右へ移動";
-        }
-
-        syncControlsFromCharacter();
-      });
-
-      offsetXInput.addEventListener("input", applyControlsToCharacter);
-      offsetYInput.addEventListener("input", applyControlsToCharacter);
-      scaleInput.addEventListener("input", applyControlsToCharacter);
-
-      function applyNumberInputs() {
-        const x = clamp(Number(offsetXNumber.value || 0), -800, 800);
-        const y = clamp(Number(offsetYNumber.value || 0), -800, 800);
-        const scale = clamp(Number(scaleNumber.value || 1), 0.300, 2.000);
-
-        offsetXInput.value = String(Math.round(x));
-        offsetYInput.value = String(Math.round(y));
-        scaleInput.value = scale.toFixed(3);
-
-        applyControlsToCharacter();
-      }
-
-      offsetXNumber.addEventListener("input", applyNumberInputs);
-      offsetYNumber.addEventListener("input", applyNumberInputs);
-      scaleNumber.addEventListener("input", applyNumberInputs);
-
-      [offsetXNumber, offsetYNumber, scaleNumber].forEach((input) => {
-        input.addEventListener("keydown", (event) => {
-          if (event.key === "Enter") {
-            input.blur();
-          }
-        });
-      });
-
-      resetCurrentButton.addEventListener("click", () => {
-        characters[editingIndex].transform = { x: 0, y: 0, scale: 1 };
-        syncControlsFromCharacter();
-        applyControlsToCharacter();
-      });
-
-      copyButton.addEventListener("click", async () => {
-        try {
-          await navigator.clipboard.writeText(configOutput.value);
-          copyButton.textContent = "コピーしました";
-          setTimeout(() => {
-            copyButton.textContent = "設定をコピー";
-          }, 1200);
-        } catch (error) {
-          alert("コピーできませんでした。出力欄を手動でコピーしてください。");
-        }
-      });
-
-      movePanelButton.addEventListener("click", () => {
-        debugPanel.classList.toggle("is-left");
-        movePanelButton.textContent = debugPanel.classList.contains("is-left")
-          ? "右へ移動"
-          : "左へ移動";
-      });
-
-      hidePanelButton.addEventListener("click", () => {
-        debugPanel.classList.add("is-hidden");
-        showPanelButton.classList.add("is-visible");
-      });
-
-      showPanelButton.addEventListener("click", () => {
-        debugPanel.classList.remove("is-hidden");
-        showPanelButton.classList.remove("is-visible");
-      });
-
       scene.addEventListener("pointerenter", () => { pointerInside = true; });
 
       scene.addEventListener("pointerleave", () => {
         pointerInside = false;
         if (!isTouchLike) {
-          showCharacter(editingIndex, false);
+          showCharacter(-1, false);
         }
       });
 
       scene.addEventListener("pointermove", (event) => {
         if (!ready || isTouchLike) return;
         const point = pointToImageCoordinates(event);
-        const index = characterAt(point.x, point.y);
-        if (index >= 0) {
-          showCharacter(index, false);
-        } else {
-          showCharacter(editingIndex, false);
-        }
+        showCharacter(characterAt(point.x, point.y), false);
       });
 
       scene.addEventListener("click", (event) => {
@@ -755,7 +416,7 @@
         });
 
         link.addEventListener("blur", () => {
-          if (ready && !pointerInside) showCharacter(editingIndex, false);
+          if (ready && !pointerInside) showCharacter(-1, false);
         });
       });
 
@@ -765,8 +426,6 @@
           rebuildAll();
           ready = true;
           loadingMessage.hidden = true;
-          refreshConfigOutput();
-          syncControlsFromCharacter();
         })
         .catch((error) => {
           console.error(error);
