@@ -4,9 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="dark">
-  <title>Cyber Train Links</title>
-  <!-- v4: 白黒マスクの明度を正しく透明度へ変換 -->
-
+  <title>Cyber Train Links - Mask Adjuster</title>
   <style>
     :root {
       --label-bg: rgba(5, 9, 19, 0.84);
@@ -17,13 +15,11 @@
 
     * { box-sizing: border-box; }
 
-    html,
-    body {
+    html, body {
       width: 100%;
       min-height: 100%;
       margin: 0;
-      background:
-        radial-gradient(circle at 50% 42%, #12182a 0%, #070910 58%, #020307 100%);
+      background: radial-gradient(circle at 50% 42%, #12182a 0%, #070910 58%, #020307 100%);
     }
 
     body {
@@ -40,11 +36,7 @@
       height: 100svh;
       display: grid;
       place-items: center;
-      padding:
-        env(safe-area-inset-top)
-        env(safe-area-inset-right)
-        env(safe-area-inset-bottom)
-        env(safe-area-inset-left);
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     }
 
     .scene {
@@ -60,39 +52,35 @@
       cursor: default;
     }
 
-    .background {
+    .background, .highlight-layer {
       position: absolute;
       inset: 0;
       display: block;
       width: 100%;
       height: 100%;
+    }
+
+    .background {
       object-fit: fill;
       pointer-events: none;
     }
 
     .highlight-layer {
-      position: absolute;
-      inset: 0;
-      display: block;
-      width: 100%;
-      height: 100%;
       opacity: 0;
       pointer-events: none;
       transition: opacity var(--transition);
       mix-blend-mode: screen;
       filter:
-        brightness(1.46)
+        brightness(1.50)
         contrast(1.08)
-        saturate(1.20)
-        drop-shadow(0 0 2px rgba(235, 250, 255, 1))
-        drop-shadow(0 0 7px rgba(170, 229, 255, 0.98))
-        drop-shadow(0 0 16px rgba(91, 174, 255, 0.88))
-        drop-shadow(0 0 30px rgba(89, 103, 255, 0.52));
+        saturate(1.22)
+        drop-shadow(0 0 3px rgba(240, 252, 255, 1))
+        drop-shadow(0 0 8px rgba(173, 231, 255, 0.98))
+        drop-shadow(0 0 18px rgba(88, 174, 255, 0.92))
+        drop-shadow(0 0 36px rgba(89, 103, 255, 0.56));
     }
 
-    .highlight-layer.is-visible {
-      opacity: 1;
-    }
+    .highlight-layer.is-visible { opacity: 1; }
 
     .destination-label {
       position: absolute;
@@ -104,9 +92,7 @@
       border: 1px solid var(--label-border);
       border-radius: 999px;
       background: var(--label-bg);
-      box-shadow:
-        0 0 24px rgba(83, 156, 255, 0.18),
-        inset 0 0 16px rgba(154, 216, 255, 0.04);
+      box-shadow: 0 0 24px rgba(83, 156, 255, 0.18), inset 0 0 16px rgba(154, 216, 255, 0.04);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       color: var(--label-text);
@@ -166,6 +152,75 @@
 
     .loading-message[hidden] { display: none; }
 
+    .debug-panel {
+      position: fixed;
+      right: 16px;
+      top: 16px;
+      z-index: 100;
+      width: min(360px, calc(100vw - 32px));
+      padding: 14px;
+      border: 1px solid rgba(167, 221, 255, 0.35);
+      border-radius: 14px;
+      background: rgba(7, 11, 19, 0.82);
+      box-shadow: 0 0 24px rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .debug-panel h2 {
+      margin: 0 0 10px;
+      font-size: 15px;
+    }
+
+    .debug-panel .row { margin-bottom: 10px; }
+    .debug-panel label { display: block; margin-bottom: 4px; }
+    .debug-panel select,
+    .debug-panel input[type="range"],
+    .debug-panel textarea,
+    .debug-panel button {
+      width: 100%;
+    }
+
+    .debug-panel textarea {
+      min-height: 150px;
+      resize: vertical;
+      background: rgba(0,0,0,0.28);
+      color: #eaf5ff;
+      border: 1px solid rgba(167,221,255,0.28);
+      border-radius: 8px;
+      padding: 8px;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 12px;
+    }
+
+    .debug-panel .value {
+      font-weight: 700;
+      color: #b7e8ff;
+      margin-left: 6px;
+    }
+
+    .debug-panel .buttons {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .debug-panel button {
+      border: 1px solid rgba(167,221,255,0.28);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.05);
+      color: #f5fbff;
+      padding: 8px 10px;
+      cursor: pointer;
+    }
+
+    .debug-panel .hint {
+      opacity: 0.82;
+      font-size: 12px;
+    }
+
     .keyboard-links {
       position: fixed;
       left: -10000px;
@@ -175,50 +230,28 @@
       overflow: hidden;
     }
 
-    @media (hover: none), (pointer: coarse) {
-      .destination-label {
-        bottom: max(18px, env(safe-area-inset-bottom));
-      }
-
-      .tap-guide {
-        bottom: calc(max(18px, env(safe-area-inset-bottom)) + 49px);
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .highlight-layer,
-      .destination-label,
-      .tap-guide {
-        transition: none;
+    @media (max-width: 900px) {
+      .debug-panel {
+        left: 12px;
+        right: 12px;
+        top: auto;
+        bottom: 12px;
+        width: auto;
+        max-height: 45svh;
+        overflow: auto;
       }
     }
   </style>
 </head>
-
 <body>
   <main class="page">
-    <div
-      class="scene"
-      id="scene"
-      role="application"
-      aria-label="サイバーパンク列車のリンク画面。人物を選択すると対応するリンクへ移動します。"
-    >
-      <img
-        class="background"
-        id="backgroundImage"
-        src="./cyber-train.png"
-        width="1672"
-        height="941"
-        alt="サイバーパンク都市を走る列車内の5人"
-        draggable="false"
-      >
-
+    <div class="scene" id="scene" role="application" aria-label="サイバーパンク列車のリンク画面。人物を選択すると対応するリンクへ移動します。">
+      <img class="background" id="backgroundImage" src="./cyber-train.png" width="1672" height="941" alt="サイバーパンク都市を走る列車内の5人" draggable="false">
       <canvas class="highlight-layer" width="1672" height="941" aria-hidden="true"></canvas>
       <canvas class="highlight-layer" width="1672" height="941" aria-hidden="true"></canvas>
       <canvas class="highlight-layer" width="1672" height="941" aria-hidden="true"></canvas>
       <canvas class="highlight-layer" width="1672" height="941" aria-hidden="true"></canvas>
       <canvas class="highlight-layer" width="1672" height="941" aria-hidden="true"></canvas>
-
       <div class="destination-label" id="destinationLabel" role="status" aria-live="polite"></div>
       <div class="tap-guide" id="tapGuide" aria-hidden="true">もう一度タップして移動</div>
       <div class="loading-message" id="loadingMessage">画像とマスクを読み込んでいます…</div>
@@ -233,6 +266,45 @@
     </nav>
   </main>
 
+  <aside class="debug-panel">
+    <h2>マスク位置調整</h2>
+
+    <div class="row">
+      <label for="characterSelect">人物</label>
+      <select id="characterSelect"></select>
+    </div>
+
+    <div class="row">
+      <label for="offsetX">X移動 <span class="value" id="offsetXValue">0</span></label>
+      <input id="offsetX" type="range" min="-800" max="800" step="1" value="0">
+    </div>
+
+    <div class="row">
+      <label for="offsetY">Y移動 <span class="value" id="offsetYValue">0</span></label>
+      <input id="offsetY" type="range" min="-800" max="800" step="1" value="0">
+    </div>
+
+    <div class="row">
+      <label for="scale">拡大率 <span class="value" id="scaleValue">1.000</span></label>
+      <input id="scale" type="range" min="0.300" max="2.000" step="0.001" value="1.000">
+    </div>
+
+    <div class="buttons row">
+      <button id="resetCurrentButton" type="button">現在の人物をリセット</button>
+      <button id="copyButton" type="button">設定をコピー</button>
+    </div>
+
+    <div class="row">
+      <label for="configOutput">characters 配列へ戻す設定値</label>
+      <textarea id="configOutput" readonly></textarea>
+    </div>
+
+    <div class="hint">
+      まず人物を選び、スライダーで位置と大きさを合わせてください。<br>
+      その後「設定をコピー」を押し、出力された transform 値を本番用HTMLへ戻せます。
+    </div>
+  </aside>
+
   <script>
     (() => {
       "use strict";
@@ -241,38 +313,12 @@
       const HEIGHT = 941;
       const ALPHA_THRESHOLD = 34;
 
-      /*
-       * 左から順番に設定します。
-       * url   : 実際のリンク先
-       * label : 画面に表示するリンク先名称
-       * mask  : masksフォルダ内の白黒マスク画像
-       */
       const characters = [
-        {
-          mask: "./masks/character-01.png",
-          url: "https://example.com/photography",
-          label: "Photography Gallery"
-        },
-        {
-          mask: "./masks/character-02.png",
-          url: "https://example.com/novels",
-          label: "Novel Archive"
-        },
-        {
-          mask: "./masks/character-03.png",
-          url: "https://example.com/creative",
-          label: "Creative Works"
-        },
-        {
-          mask: "./masks/character-04.png",
-          url: "https://example.com/music",
-          label: "Music Channel"
-        },
-        {
-          mask: "./masks/character-05.png",
-          url: "https://example.com/social",
-          label: "Social Media"
-        }
+        { mask: "./masks/character-01.png", url: "https://example.com/photography", label: "Photography Gallery", name: "1: 写真家", transform: { x: 0, y: 0, scale: 1 } },
+        { mask: "./masks/character-02.png", url: "https://example.com/novels",      label: "Novel Archive",       name: "2: 小説家", transform: { x: 0, y: 0, scale: 1 } },
+        { mask: "./masks/character-03.png", url: "https://example.com/creative",    label: "Creative Works",     name: "3: クリエイター", transform: { x: 0, y: 0, scale: 1 } },
+        { mask: "./masks/character-04.png", url: "https://example.com/music",       label: "Music Channel",      name: "4: 音楽家", transform: { x: 0, y: 0, scale: 1 } },
+        { mask: "./masks/character-05.png", url: "https://example.com/social",      label: "Social Media",       name: "5: SNSマネージャー", transform: { x: 0, y: 0, scale: 1 } }
       ];
 
       const scene = document.getElementById("scene");
@@ -283,12 +329,25 @@
       const loadingMessage = document.getElementById("loadingMessage");
       const keyboardLinks = [...document.querySelectorAll(".keyboard-links a")];
 
+      const characterSelect = document.getElementById("characterSelect");
+      const offsetXInput = document.getElementById("offsetX");
+      const offsetYInput = document.getElementById("offsetY");
+      const scaleInput = document.getElementById("scale");
+      const offsetXValue = document.getElementById("offsetXValue");
+      const offsetYValue = document.getElementById("offsetYValue");
+      const scaleValue = document.getElementById("scaleValue");
+      const configOutput = document.getElementById("configOutput");
+      const resetCurrentButton = document.getElementById("resetCurrentButton");
+      const copyButton = document.getElementById("copyButton");
+
       const isTouchLike = window.matchMedia("(hover: none), (pointer: coarse)").matches;
 
       let activeIndex = -1;
       let selectedIndex = -1;
       let ready = false;
       let pointerInside = false;
+      let editingIndex = 0;
+      let maskImages = [];
 
       function loadImage(src) {
         return new Promise((resolve, reject) => {
@@ -307,21 +366,26 @@
 
         return new Promise((resolve, reject) => {
           backgroundImage.addEventListener("load", () => resolve(backgroundImage), { once: true });
-          backgroundImage.addEventListener(
-            "error",
-            () => reject(new Error("cyber-train.pngを読み込めませんでした。")),
-            { once: true }
-          );
+          backgroundImage.addEventListener("error", () => reject(new Error("cyber-train.pngを読み込めませんでした。")), { once: true });
         });
       }
 
-      function createMaskAlpha(maskImage) {
+      function drawMaskWithTransform(context, maskImage, transform) {
+        context.clearRect(0, 0, WIDTH, HEIGHT);
+        context.save();
+        context.translate(WIDTH / 2 + transform.x, HEIGHT / 2 + transform.y);
+        context.scale(transform.scale, transform.scale);
+        context.drawImage(maskImage, -WIDTH / 2, -HEIGHT / 2, WIDTH, HEIGHT);
+        context.restore();
+      }
+
+      function createMaskAlpha(maskImage, transform) {
         const canvas = document.createElement("canvas");
         canvas.width = WIDTH;
         canvas.height = HEIGHT;
 
         const context = canvas.getContext("2d", { willReadFrequently: true });
-        context.drawImage(maskImage, 0, 0, WIDTH, HEIGHT);
+        drawMaskWithTransform(context, maskImage, transform);
 
         const imageData = context.getImageData(0, 0, WIDTH, HEIGHT);
         const data = imageData.data;
@@ -333,32 +397,26 @@
             data[index + 1] * 0.7152 +
             data[index + 2] * 0.0722
           );
-
           alpha[pixel] = luminance;
         }
 
         return alpha;
       }
 
-      function buildHighlight(canvas, maskImage) {
+      function buildHighlight(canvas, maskImage, transform) {
         const context = canvas.getContext("2d", { willReadFrequently: true });
         context.clearRect(0, 0, WIDTH, HEIGHT);
-
-        // 元絵を描画します。
         context.drawImage(backgroundImage, 0, 0, WIDTH, HEIGHT);
-        const highlightData = context.getImageData(0, 0, WIDTH, HEIGHT);
 
-        // 白黒マスクを別Canvasへ描画し、明度を透明度へ変換します。
-        // 黒背景のPNGは画像全体に不透明度があるため、
-        // destination-inではなくピクセル単位でアルファを作ります。
+        const highlightData = context.getImageData(0, 0, WIDTH, HEIGHT);
         const maskCanvas = document.createElement("canvas");
         maskCanvas.width = WIDTH;
         maskCanvas.height = HEIGHT;
 
         const maskContext = maskCanvas.getContext("2d", { willReadFrequently: true });
-        maskContext.drawImage(maskImage, 0, 0, WIDTH, HEIGHT);
-        const maskData = maskContext.getImageData(0, 0, WIDTH, HEIGHT).data;
+        drawMaskWithTransform(maskContext, maskImage, transform);
 
+        const maskData = maskContext.getImageData(0, 0, WIDTH, HEIGHT).data;
         const pixels = highlightData.data;
 
         for (let index = 0; index < pixels.length; index += 4) {
@@ -367,17 +425,23 @@
             maskData[index + 1] * 0.7152 +
             maskData[index + 2] * 0.0722
           );
-
-          // 白い人物部分だけを残し、黒い背景は完全に透明にします。
           pixels[index + 3] = luminance;
         }
 
         context.putImageData(highlightData, 0, 0);
       }
 
+      function rebuildCharacter(index) {
+        characters[index].alpha = createMaskAlpha(maskImages[index], characters[index].transform);
+        buildHighlight(canvases[index], maskImages[index], characters[index].transform);
+      }
+
+      function rebuildAll() {
+        characters.forEach((_, index) => rebuildCharacter(index));
+      }
+
       function pointToImageCoordinates(event) {
         const rect = scene.getBoundingClientRect();
-
         return {
           x: Math.max(0, Math.min(WIDTH - 1, Math.floor((event.clientX - rect.left) * WIDTH / rect.width))),
           y: Math.max(0, Math.min(HEIGHT - 1, Math.floor((event.clientY - rect.top) * HEIGHT / rect.height)))
@@ -386,23 +450,15 @@
 
       function characterAt(x, y) {
         const pixel = y * WIDTH + x;
-
-        // 人物が重なる場所では、画面上で右側にいる人物を優先します。
         for (let index = characters.length - 1; index >= 0; index -= 1) {
           if (characters[index].alpha[pixel] >= ALPHA_THRESHOLD) {
             return index;
           }
         }
-
         return -1;
       }
 
       function showCharacter(index, showTapGuide = false) {
-        if (activeIndex === index && label.classList.contains("is-visible")) {
-          tapGuide.classList.toggle("is-visible", showTapGuide);
-          return;
-        }
-
         canvases.forEach((canvas, canvasIndex) => {
           canvas.classList.toggle("is-visible", canvasIndex === index);
         });
@@ -427,39 +483,104 @@
         showCharacter(-1, false);
       }
 
-      scene.addEventListener("pointerenter", () => {
-        pointerInside = true;
+      function refreshConfigOutput() {
+        const lines = characters.map((character, index) => {
+          const t = character.transform;
+          return `  { mask: "${character.mask}", url: "${character.url}", label: "${character.label}", transform: { x: ${t.x}, y: ${t.y}, scale: ${t.scale.toFixed(3)} } }${index === characters.length - 1 ? "" : ","}`;
+        });
+        configOutput.value = "[\n" + lines.join("\n") + "\n]";
+      }
+
+      function syncControlsFromCharacter() {
+        const transform = characters[editingIndex].transform;
+        offsetXInput.value = String(transform.x);
+        offsetYInput.value = String(transform.y);
+        scaleInput.value = String(transform.scale.toFixed(3));
+        offsetXValue.textContent = String(transform.x);
+        offsetYValue.textContent = String(transform.y);
+        scaleValue.textContent = Number(transform.scale).toFixed(3);
+        showCharacter(editingIndex, false);
+      }
+
+      function applyControlsToCharacter() {
+        const transform = characters[editingIndex].transform;
+        transform.x = Number(offsetXInput.value);
+        transform.y = Number(offsetYInput.value);
+        transform.scale = Number(scaleInput.value);
+
+        offsetXValue.textContent = String(transform.x);
+        offsetYValue.textContent = String(transform.y);
+        scaleValue.textContent = Number(transform.scale).toFixed(3);
+
+        if (ready) {
+          rebuildCharacter(editingIndex);
+          showCharacter(editingIndex, false);
+        }
+
+        refreshConfigOutput();
+      }
+
+      characters.forEach((character, index) => {
+        const option = document.createElement("option");
+        option.value = String(index);
+        option.textContent = character.name;
+        characterSelect.appendChild(option);
       });
+
+      characterSelect.addEventListener("change", () => {
+        editingIndex = Number(characterSelect.value);
+        syncControlsFromCharacter();
+      });
+
+      offsetXInput.addEventListener("input", applyControlsToCharacter);
+      offsetYInput.addEventListener("input", applyControlsToCharacter);
+      scaleInput.addEventListener("input", applyControlsToCharacter);
+
+      resetCurrentButton.addEventListener("click", () => {
+        characters[editingIndex].transform = { x: 0, y: 0, scale: 1 };
+        syncControlsFromCharacter();
+        applyControlsToCharacter();
+      });
+
+      copyButton.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(configOutput.value);
+          copyButton.textContent = "コピーしました";
+          setTimeout(() => {
+            copyButton.textContent = "設定をコピー";
+          }, 1200);
+        } catch (error) {
+          alert("コピーできませんでした。出力欄を手動でコピーしてください。");
+        }
+      });
+
+      scene.addEventListener("pointerenter", () => { pointerInside = true; });
 
       scene.addEventListener("pointerleave", () => {
         pointerInside = false;
-
         if (!isTouchLike) {
-          showCharacter(-1, false);
+          showCharacter(editingIndex, false);
         }
       });
 
       scene.addEventListener("pointermove", (event) => {
-        if (!ready || isTouchLike) {
-          return;
-        }
-
+        if (!ready || isTouchLike) return;
         const point = pointToImageCoordinates(event);
-        showCharacter(characterAt(point.x, point.y), false);
+        const index = characterAt(point.x, point.y);
+        if (index >= 0) {
+          showCharacter(index, false);
+        } else {
+          showCharacter(editingIndex, false);
+        }
       });
 
       scene.addEventListener("click", (event) => {
-        if (!ready) {
-          return;
-        }
-
+        if (!ready) return;
         const point = pointToImageCoordinates(event);
         const index = characterAt(point.x, point.y);
 
         if (index < 0) {
-          if (isTouchLike) {
-            clearSelection();
-          }
+          if (isTouchLike) clearSelection();
           return;
         }
 
@@ -482,32 +603,22 @@
         link.textContent = characters[index].label;
 
         link.addEventListener("focus", () => {
-          if (ready) {
-            showCharacter(index, false);
-          }
+          if (ready) showCharacter(index, false);
         });
 
         link.addEventListener("blur", () => {
-          if (ready && !pointerInside) {
-            showCharacter(-1, false);
-          }
+          if (ready && !pointerInside) showCharacter(editingIndex, false);
         });
       });
 
-      Promise.all([
-        waitForBackground(),
-        ...characters.map((character) => loadImage(character.mask))
-      ])
+      Promise.all([waitForBackground(), ...characters.map((character) => loadImage(character.mask))])
         .then((loaded) => {
-          const maskImages = loaded.slice(1);
-
-          maskImages.forEach((maskImage, index) => {
-            characters[index].alpha = createMaskAlpha(maskImage);
-            buildHighlight(canvases[index], maskImage);
-          });
-
+          maskImages = loaded.slice(1);
+          rebuildAll();
           ready = true;
           loadingMessage.hidden = true;
+          refreshConfigOutput();
+          syncControlsFromCharacter();
         })
         .catch((error) => {
           console.error(error);
