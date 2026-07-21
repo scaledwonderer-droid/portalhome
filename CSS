@@ -1,0 +1,30 @@
+.character-map {
+  position: relative;
+  width: min(100%, 1920px);
+  margin: auto;
+}
+
+.character-map img,
+.character-map svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.character-map svg {
+  position: absolute;
+  inset: 0;
+}
+
+.character-map polygon {
+  fill: transparent;
+  stroke: transparent;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.character-map a:hover polygon {
+  fill: rgba(100, 190, 255, 0.12);
+  stroke: rgba(150, 220, 255, 0.8);
+  stroke-width: 3;
+}
