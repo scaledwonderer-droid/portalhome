@@ -181,6 +181,31 @@
       gap: 9px;
     }
 
+    .submenu-links.is-stacked {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+
+    .submenu-links.is-stacked .submenu-link {
+      width: 100%;
+    }
+
+    .coming-soon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      width: 100%;
+      border: 1px solid rgba(166, 223, 255, 0.18);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.025);
+      color: rgba(228, 242, 250, 0.68);
+      font-size: clamp(13px, 1.05vw, 15px);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-align: center;
+    }
+
     .submenu-link {
       display: inline-flex;
       align-items: center;
@@ -370,20 +395,18 @@
           mask: "./masks/character-01.png",
           label: "Photography Gallery",
           transform: { x: -73, y: 5, scale: 0.991 },
-          links: [
-            { label: "Portfolio", url: "https://example.com/photography" },
-            { label: "X", url: "https://x.com/" },
-            { label: "Instagram", url: "https://www.instagram.com/" }
-          ]
+          links: [],
+          comingSoon: true
         },
         {
           mask: "./masks/character-02.png",
           label: "Novel Archive",
           transform: { x: -88, y: 112, scale: 0.830 },
           links: [
-            { label: "Works", url: "https://example.com/novels" },
-            { label: "Blog", url: "https://example.com/blog" },
-            { label: "X", url: "https://x.com/" }
+            {
+              label: "EclipseLizard",
+              url: "https://eclipselizard.tumblr.com/"
+            }
           ]
         },
         {
@@ -391,29 +414,37 @@
           label: "Creative Works",
           transform: { x: 0, y: 0, scale: 1.000 },
           links: [
-            { label: "Projects", url: "https://example.com/creative" },
-            { label: "GitHub", url: "https://github.com/" },
-            { label: "X", url: "https://x.com/" }
-          ]
+            {
+              label: "FFXIV Adventurer's Scrapbook",
+              url: "https://scaledwonderer-droid.github.io/Scrapbook/"
+            },
+            {
+              label: "RPcards",
+              url: "https://scaledwonderer-droid.github.io/RPcards/"
+            }
+          ],
+          stackedLinks: true
         },
         {
           mask: "./masks/character-04.png",
           label: "Music Channel",
           transform: { x: 86, y: -2, scale: 0.985 },
-          links: [
-            { label: "YouTube", url: "https://www.youtube.com/" },
-            { label: "SoundCloud", url: "https://soundcloud.com/" },
-            { label: "X", url: "https://x.com/" }
-          ]
+          links: [],
+          comingSoon: true
         },
         {
           mask: "./masks/character-05.png",
           label: "Social Media",
           transform: { x: 57, y: 25, scale: 0.930 },
           links: [
-            { label: "Profile", url: "https://example.com/social" },
-            { label: "X", url: "https://x.com/" },
-            { label: "Instagram", url: "https://www.instagram.com/" }
+            {
+              label: "Profile",
+              url: "https://example.com/social"
+            },
+            {
+              label: "X",
+              url: "https://x.com/theodoreRamuh"
+            }
           ]
         }
       ];
@@ -642,21 +673,32 @@
         menuIndex = index;
         submenuHeading.textContent = character.label;
         submenuLinks.innerHTML = "";
+        submenuLinks.classList.toggle(
+          "is-stacked",
+          character.stackedLinks === true
+        );
 
-        character.links.forEach((item) => {
-          const link = document.createElement("a");
+        if (character.comingSoon === true || character.links.length === 0) {
+          const message = document.createElement("div");
+          message.className = "coming-soon";
+          message.textContent = "Coming soon";
+          submenuLinks.appendChild(message);
+        } else {
+          character.links.forEach((item) => {
+            const link = document.createElement("a");
 
-          link.className = "submenu-link";
-          link.href = item.url;
-          link.textContent = item.label;
+            link.className = "submenu-link";
+            link.href = item.url;
+            link.textContent = item.label;
 
-          if (/^https?:\/\//i.test(item.url)) {
-            link.target = "_blank";
-            link.rel = "noopener noreferrer";
-          }
+            if (/^https?:\/\//i.test(item.url)) {
+              link.target = "_blank";
+              link.rel = "noopener noreferrer";
+            }
 
-          submenuLinks.appendChild(link);
-        });
+            submenuLinks.appendChild(link);
+          });
+        }
 
         submenu.classList.add("is-visible");
         submenu.setAttribute("aria-hidden", "false");
