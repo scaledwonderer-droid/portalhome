@@ -77,11 +77,151 @@
     }
 
     .background {
+      z-index: 0;
       object-fit: fill;
       pointer-events: none;
     }
 
+
+    /*
+     * 窓外アニメーション
+     * 追加画像は使わず、細い光と遠景の帯を低い不透明度で流します。
+     * 人物や車内を邪魔しないよう、窓の上寄りだけに限定しています。
+     */
+    .window-motion {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .window-panel {
+      position: absolute;
+      overflow: hidden;
+      opacity: 0.34;
+      mix-blend-mode: screen;
+      filter: blur(0.35px) saturate(1.08);
+      isolation: isolate;
+    }
+
+    .window-panel-left {
+      left: 13.5%;
+      top: 0.8%;
+      width: 35.5%;
+      height: 33%;
+      clip-path: polygon(
+        0 19%,
+        11% 0,
+        100% 0,
+        100% 86%,
+        94% 100%,
+        7% 100%,
+        0 82%
+      );
+    }
+
+    .window-panel-center {
+      left: 54.5%;
+      top: 0;
+      width: 27%;
+      height: 29%;
+      clip-path: polygon(
+        0 0,
+        100% 0,
+        100% 82%,
+        89% 100%,
+        8% 100%,
+        0 74%
+      );
+    }
+
+    .window-panel-right {
+      right: 0;
+      top: 0;
+      width: 21.5%;
+      height: 42%;
+      clip-path: polygon(
+        0 0,
+        100% 0,
+        100% 100%,
+        15% 100%,
+        0 82%
+      );
+    }
+
+    .city-flow,
+    .light-flow {
+      position: absolute;
+      inset: -8% -110%;
+      width: 320%;
+      transform: translate3d(0, 0, 0);
+      will-change: transform;
+    }
+
+    .city-flow {
+      background:
+        repeating-linear-gradient(
+          90deg,
+          transparent 0 30px,
+          rgba(77, 127, 189, 0.11) 31px 33px,
+          transparent 34px 68px,
+          rgba(127, 84, 179, 0.09) 69px 73px,
+          transparent 74px 112px
+        ),
+        linear-gradient(
+          to bottom,
+          rgba(85, 126, 181, 0.10),
+          transparent 42%,
+          rgba(70, 85, 143, 0.08) 68%,
+          transparent
+        );
+      filter: blur(1.1px);
+    }
+
+    .light-flow {
+      background:
+        repeating-linear-gradient(
+          90deg,
+          transparent 0 105px,
+          rgba(121, 215, 255, 0.22) 106px 108px,
+          rgba(121, 215, 255, 0.05) 109px 126px,
+          transparent 127px 238px,
+          rgba(246, 102, 255, 0.14) 239px 242px,
+          transparent 243px 362px
+        );
+      filter: blur(2.2px);
+      opacity: 0.66;
+    }
+
+    .city-flow-slow {
+      animation: window-slide-left 22s linear infinite;
+    }
+
+    .city-flow-medium {
+      animation: window-slide-left 16s linear infinite;
+    }
+
+    .light-flow-medium {
+      animation: window-slide-left 10s linear infinite;
+    }
+
+    .light-flow-fast {
+      animation: window-slide-left 7s linear infinite;
+    }
+
+    @keyframes window-slide-left {
+      from {
+        transform: translate3d(0, 0, 0);
+      }
+
+      to {
+        transform: translate3d(-33.333%, 0, 0);
+      }
+    }
+
     .highlight-layer {
+      z-index: 2;
       opacity: 0;
       pointer-events: none;
       transition: opacity var(--transition);
@@ -315,6 +455,15 @@
       .submenu {
         transition: none;
       }
+
+      .city-flow,
+      .light-flow {
+        animation: none;
+      }
+
+      .window-motion {
+        opacity: 0.45;
+      }
     }
   </style>
 </head>
@@ -336,6 +485,24 @@
         alt="サイバーパンク都市を走る列車内の5人"
         draggable="false"
       >
+
+      <!-- 窓外の走行感を出す、ごく控えめな光の流れ -->
+      <div class="window-motion" aria-hidden="true">
+        <div class="window-panel window-panel-left">
+          <div class="city-flow city-flow-slow"></div>
+          <div class="light-flow light-flow-fast"></div>
+        </div>
+
+        <div class="window-panel window-panel-center">
+          <div class="city-flow city-flow-medium"></div>
+          <div class="light-flow light-flow-fast"></div>
+        </div>
+
+        <div class="window-panel window-panel-right">
+          <div class="city-flow city-flow-slow"></div>
+          <div class="light-flow light-flow-medium"></div>
+        </div>
+      </div>
 
       <canvas class="highlight-layer" width="1672" height="941" aria-hidden="true"></canvas>
       <canvas class="highlight-layer" width="1672" height="941" aria-hidden="true"></canvas>
@@ -762,10 +929,18 @@
       });
 
       keyboardLinks.forEach((link, index) => {
-        const firstLink = characters[index].links[0];
+        const character = characters[index];
+        const firstLink = character.links[0];
 
-        link.href = firstLink.url;
-        link.textContent = characters[index].label;
+        link.textContent = character.label;
+
+        if (firstLink) {
+          link.href = firstLink.url;
+        } else {
+          link.removeAttribute("href");
+          link.setAttribute("aria-disabled", "true");
+          link.tabIndex = -1;
+        }
 
         link.addEventListener("focus", () => {
           if (ready) {
