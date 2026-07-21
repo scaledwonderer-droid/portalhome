@@ -376,6 +376,12 @@
       outline: none;
     }
 
+    .submenu-link.is-disabled {
+      cursor: default;
+      opacity: 0.58;
+      pointer-events: none;
+    }
+
     .submenu-close {
       position: absolute;
       top: 10px;
@@ -534,11 +540,11 @@
     </div>
 
     <nav class="keyboard-links" aria-label="リンク一覧">
-      <a href="https://example.com/photography">Photography Gallery</a>
-      <a href="https://example.com/novels">Novel Archive</a>
-      <a href="https://example.com/creative">Creative Works</a>
-      <a href="https://example.com/music">Music Channel</a>
-      <a href="https://example.com/social">Social Media</a>
+      <a>Photography Gallery</a>
+      <a>Novel Archive</a>
+      <a>Creative Works</a>
+      <a>Music Channel</a>
+      <a>Social Media</a>
     </nav>
   </main>
 
@@ -606,7 +612,7 @@
           links: [
             {
               label: "Profile",
-              url: "https://example.com/social"
+              url: null
             },
             {
               label: "X",
@@ -852,18 +858,26 @@
           submenuLinks.appendChild(message);
         } else {
           character.links.forEach((item) => {
-            const link = document.createElement("a");
+            const hasUrl = typeof item.url === "string" && item.url.trim() !== "";
+            const entry = document.createElement(hasUrl ? "a" : "span");
 
-            link.className = "submenu-link";
-            link.href = item.url;
-            link.textContent = item.label;
+            entry.className = "submenu-link";
+            entry.textContent = item.label;
 
-            if (/^https?:\/\//i.test(item.url)) {
-              link.target = "_blank";
-              link.rel = "noopener noreferrer";
+            if (hasUrl) {
+              entry.href = item.url;
+
+              if (/^https?:\/\//i.test(item.url)) {
+                entry.target = "_blank";
+                entry.rel = "noopener noreferrer";
+              }
+            } else {
+              entry.classList.add("is-disabled");
+              entry.setAttribute("aria-disabled", "true");
+              entry.title = "リンク先は未設定です";
             }
 
-            submenuLinks.appendChild(link);
+            submenuLinks.appendChild(entry);
           });
         }
 
@@ -934,7 +948,7 @@
 
         link.textContent = character.label;
 
-        if (firstLink) {
+        if (firstLink && typeof firstLink.url === "string" && firstLink.url.trim() !== "") {
           link.href = firstLink.url;
         } else {
           link.removeAttribute("href");
