@@ -612,7 +612,8 @@
           links: [
             {
               label: "Profile",
-              url: null
+              url: "https://scaledwonderer-droid.github.io/Profile/",
+              sameTab: true
             },
             {
               label: "X",
@@ -867,7 +868,7 @@
             if (hasUrl) {
               entry.href = item.url;
 
-              if (/^https?:\/\//i.test(item.url)) {
+              if (/^https?:\/\//i.test(item.url) && item.sameTab !== true) {
                 entry.target = "_blank";
                 entry.rel = "noopener noreferrer";
               }
@@ -950,6 +951,14 @@
 
         if (firstLink && typeof firstLink.url === "string" && firstLink.url.trim() !== "") {
           link.href = firstLink.url;
+
+          if (/^https?:\/\//i.test(firstLink.url) && firstLink.sameTab !== true) {
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+          } else {
+            link.removeAttribute("target");
+            link.removeAttribute("rel");
+          }
         } else {
           link.removeAttribute("href");
           link.setAttribute("aria-disabled", "true");
