@@ -542,6 +542,150 @@
       outline: none;
     }
 
+
+
+    .about-button {
+      position: absolute;
+      top: clamp(14px, 2vw, 28px);
+      left: clamp(14px, 2vw, 28px);
+      z-index: 26;
+      min-width: 118px;
+      padding: 10px 22px 11px;
+      border: 1px solid rgba(166, 229, 255, 0.68);
+      background:
+        linear-gradient(90deg, rgba(102, 218, 255, 0.11), transparent 58%, rgba(173, 108, 255, 0.10)),
+        rgba(5, 9, 19, 0.88);
+      clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 10px);
+      color: #f6fbff;
+      font: inherit;
+      font-size: clamp(12px, 1vw, 15px);
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-shadow: 0 0 8px rgba(186, 235, 255, 0.64);
+      box-shadow:
+        0 0 12px rgba(103, 203, 255, 0.24),
+        inset 0 0 14px rgba(154, 216, 255, 0.06);
+      cursor: pointer;
+      transition: background 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+    }
+
+    .about-button:hover,
+    .about-button:focus-visible,
+    .about-button[aria-expanded="true"] {
+      border-color: rgba(190, 239, 255, 0.92);
+      background:
+        linear-gradient(90deg, rgba(102, 218, 255, 0.18), transparent 58%, rgba(173, 108, 255, 0.14)),
+        rgba(6, 13, 25, 0.94);
+      box-shadow:
+        0 0 16px rgba(103, 203, 255, 0.42),
+        0 0 28px rgba(115, 100, 255, 0.18),
+        inset 0 0 16px rgba(154, 216, 255, 0.08);
+      outline: none;
+    }
+
+    .about-panel {
+      position: absolute;
+      top: clamp(62px, 7vw, 92px);
+      left: clamp(14px, 2vw, 28px);
+      z-index: 27;
+      width: min(560px, calc(100% - 28px));
+      max-height: min(76%, 680px);
+      overflow: auto;
+      padding: 24px 58px 22px 24px;
+      border: 1px solid rgba(166, 229, 255, 0.72);
+      clip-path: polygon(18px 0, calc(100% - 48px) 0, calc(100% - 34px) 14px, 100% 14px, 100% calc(100% - 18px), calc(100% - 18px) 100%, 42px 100%, 28px calc(100% - 12px), 0 calc(100% - 12px), 0 18px);
+      background:
+        linear-gradient(90deg, rgba(102, 218, 255, 0.11), transparent 22%, transparent 80%, rgba(173, 108, 255, 0.10)),
+        linear-gradient(180deg, rgba(13, 23, 42, 0.97), rgba(3, 7, 16, 0.96));
+      box-shadow:
+        0 0 12px rgba(131, 224, 255, 0.28),
+        0 0 38px rgba(71, 155, 255, 0.28),
+        0 0 58px rgba(131, 86, 255, 0.12),
+        inset 0 0 24px rgba(146, 218, 255, 0.07);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      opacity: 0;
+      transform: translateY(-10px) scale(0.985);
+      transition: opacity var(--transition), transform var(--transition);
+      pointer-events: none;
+    }
+
+    .about-panel.is-visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .about-title {
+      margin: 0 0 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(141, 219, 255, 0.26);
+      color: rgba(244, 252, 255, 0.98);
+      font-size: clamp(16px, 1.35vw, 21px);
+      letter-spacing: 0.12em;
+      text-shadow: 0 0 9px rgba(186, 235, 255, 0.62);
+    }
+
+    .about-intro,
+    .about-item p,
+    .about-credit {
+      margin: 0;
+      color: rgba(230, 243, 250, 0.88);
+      font-size: clamp(12px, 1vw, 15px);
+      line-height: 1.8;
+    }
+
+    .about-intro + .about-intro {
+      margin-top: 5px;
+    }
+
+    .about-list {
+      display: grid;
+      gap: 10px;
+      margin: 18px 0;
+    }
+
+    .about-item {
+      padding: 10px 12px;
+      border-left: 2px solid rgba(113, 210, 255, 0.64);
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .about-item h3 {
+      margin: 0 0 2px;
+      color: #f6fbff;
+      font-size: clamp(12px, 1.02vw, 15px);
+      letter-spacing: 0.08em;
+    }
+
+    .about-credit {
+      padding-top: 14px;
+      border-top: 1px solid rgba(141, 219, 255, 0.22);
+      text-align: right;
+      letter-spacing: 0.08em;
+    }
+
+    .about-close {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      width: 32px;
+      height: 32px;
+      border: 1px solid rgba(166, 223, 255, 0.30);
+      background: rgba(255, 255, 255, 0.04);
+      color: rgba(245, 251, 255, 0.92);
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+      clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+    }
+
+    .about-close:hover,
+    .about-close:focus-visible {
+      background: rgba(126, 202, 255, 0.13);
+      outline: none;
+    }
+
     .loading-message {
       position: absolute;
       inset: 0;
@@ -579,6 +723,20 @@
     }
 
     @media (max-width: 640px) {
+
+      .about-button {
+        min-width: 96px;
+        padding: 9px 15px 10px;
+      }
+
+      .about-panel {
+        top: 58px;
+        left: 12px;
+        width: calc(100% - 24px);
+        max-height: calc(100% - 70px);
+        padding: 20px 48px 18px 18px;
+      }
+
       .submenu {
         width: calc(100% - 24px);
         padding: 14px 48px 14px 14px;
@@ -654,6 +812,50 @@
       <canvas class="highlight-layer" width="1672" height="941" aria-hidden="true"></canvas>
       <canvas class="highlight-layer" width="1672" height="941" aria-hidden="true"></canvas>
       <canvas class="highlight-layer" width="1672" height="941" aria-hidden="true"></canvas>
+
+
+
+      <button
+        class="about-button"
+        id="aboutButton"
+        type="button"
+        aria-controls="aboutPanel"
+        aria-expanded="false"
+      >ABOUT</button>
+
+      <section class="about-panel" id="aboutPanel" aria-hidden="true" aria-labelledby="aboutTitle">
+        <h2 class="about-title" id="aboutTitle">このページについて</h2>
+        <p class="about-intro">鱗の旅人のコンテンツリンク集です。</p>
+        <p class="about-intro">FF14関連コンテンツが比較的多いですが、特に限定していません。</p>
+        <p class="about-intro">車内の人物にカーソルを合わせ、クリックすると各コンテンツへのリンクが表示されます。</p>
+        <p class="about-intro">スマートフォンでは人物をタップしてください。</p>
+
+        <div class="about-list">
+          <section class="about-item">
+            <h3>Gallery</h3>
+            <p>様々なゲームのスクリーンショットなど。</p>
+          </section>
+          <section class="about-item">
+            <h3>Novel Archive</h3>
+            <p>掌編小説など。</p>
+          </section>
+          <section class="about-item">
+            <h3>Creative Works</h3>
+            <p>FF14のキャラカジェネレーターなど、鱗の旅人のコンテンツ。</p>
+          </section>
+          <section class="about-item">
+            <h3>Music</h3>
+            <p>鱗の旅人が作詞作曲した楽曲たち。</p>
+          </section>
+          <section class="about-item">
+            <h3>Social Media</h3>
+            <p>鱗の旅人のプロフィールやSNSなど。</p>
+          </section>
+        </div>
+
+        <p class="about-credit">Created by 鱗の旅人</p>
+        <button class="about-close" id="aboutClose" type="button" aria-label="ABOUTを閉じる">×</button>
+      </section>
 
       <div
         class="destination-label"
@@ -775,6 +977,11 @@
       const submenuLinks = document.getElementById("submenuLinks");
       const submenuClose = document.getElementById("submenuClose");
       const loadingMessage = document.getElementById("loadingMessage");
+
+      const aboutButton = document.getElementById("aboutButton");
+      const aboutPanel = document.getElementById("aboutPanel");
+      const aboutClose = document.getElementById("aboutClose");
+
       const keyboardLinks = [...document.querySelectorAll(".keyboard-links a")];
 
       const isTouchLike = window.matchMedia(
@@ -984,7 +1191,23 @@
         }
       }
 
+
+
+      function closeAbout() {
+        aboutPanel.classList.remove("is-visible");
+        aboutPanel.setAttribute("aria-hidden", "true");
+        aboutButton.setAttribute("aria-expanded", "false");
+      }
+
+      function openAbout() {
+        closeSubmenu({ clearHighlight: true });
+        aboutPanel.classList.add("is-visible");
+        aboutPanel.setAttribute("aria-hidden", "false");
+        aboutButton.setAttribute("aria-expanded", "true");
+      }
+
       function openSubmenu(index) {
+        closeAbout();
         const character = characters[index];
 
         menuIndex = index;
@@ -1056,7 +1279,7 @@
           return;
         }
 
-        if (event.target.closest(".submenu")) {
+        if (event.target.closest(".submenu, .about-button, .about-panel")) {
           return;
         }
 
@@ -1076,12 +1299,28 @@
         openSubmenu(index);
       });
 
+
+
+      aboutButton.addEventListener("click", () => {
+        if (aboutPanel.classList.contains("is-visible")) {
+          closeAbout();
+        } else {
+          openAbout();
+        }
+      });
+
+      aboutClose.addEventListener("click", () => {
+        closeAbout();
+        aboutButton.focus();
+      });
+
       submenuClose.addEventListener("click", () => {
         closeSubmenu({ clearHighlight: true });
       });
 
       document.addEventListener("keydown", (event) => {
         if (event.key === "Escape") {
+          closeAbout();
           closeSubmenu({ clearHighlight: true });
         }
       });
